@@ -1,0 +1,22 @@
+# Visual Studio
+.vs/
+**/.vs/
+**/bin/
+**/obj/
+
+# User-specific Visual Studio files
+*.user
+*.suo
+
+# Angular / Node
+**/node_modules/
+**/dist/
+.angular/
+
+# Environment variables
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
