@@ -1,6 +1,13 @@
-﻿namespace DevAssess.Api.Data
+﻿using DevAssess.Api.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+namespace DevAssess.Api.Data;
+
+public class AppDbContext : IdentityDbContext<ApplicationUser>
 {
-    public class AppDbContext
+    public AppDbContext(DbContextOptions<AppDbContext> options)
+        : base(options)
     {
     }
 }
