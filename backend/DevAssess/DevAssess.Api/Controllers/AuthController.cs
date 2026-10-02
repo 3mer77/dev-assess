@@ -2,6 +2,7 @@
 using DevAssess.Api.Interfaces.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace DevAssess.Api.Controllers
 {
@@ -17,6 +18,7 @@ namespace DevAssess.Api.Controllers
 
         }
 
+        [EnableRateLimiting("auth")]
         [HttpPost("register")]
         public async Task<ActionResult<UserResponse>> Register(RegisterRequest request)
         {
@@ -35,6 +37,7 @@ namespace DevAssess.Api.Controllers
                 result.User);
         }
 
+        [EnableRateLimiting("auth")]
         [HttpPost("verify-email")]
         public async Task<IActionResult> VerifyEmail(VerifyEmailRequest request)
         {
@@ -54,7 +57,7 @@ namespace DevAssess.Api.Controllers
             });
         }
 
-
+        [EnableRateLimiting("auth")]
         [HttpPost("resend-verification")]
         public async Task<IActionResult> ResendVerification(ResendVerificationRequest request)  
         {
@@ -72,6 +75,23 @@ namespace DevAssess.Api.Controllers
             {
                 message = "Verification request accepted."
             });
+        }
+
+        [EnableRateLimiting("auth")]
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginRequest request)
+        {
+            var result = await _authService.LoginAsync(request);
+
+            if (!result.Succeeded)
+            {
+                return Unauthorized(new
+                {
+                    message = result.Error
+                });
+            }
+
+            return Ok(result.User);
         }
 
     }

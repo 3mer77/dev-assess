@@ -58,7 +58,11 @@ namespace DevAssess.Api.Services.auth
             var verificationCode = await _userManager.GenerateUserTokenAsync(user,"EmailOtp" ,"EmailVerification");
             await _emailService.SendVerificationCodeAsync(user.Email!, verificationCode);
 
-            user.LastVerificationEmailSentAt = DateTime.UtcNow;
+
+            var now = DateTime.UtcNow;
+
+            user.LastVerificationEmailSentAt = now;
+            user.VerificationCodeExpiresAt = now.AddMinutes(5);
 
             var updateResult = await _userManager.UpdateAsync(user);
 
@@ -68,7 +72,7 @@ namespace DevAssess.Api.Services.auth
                     "Failed to update verification email timestamp.");
             }
 
-            return new RegisterResult
+            return new RegisterResult   
             {
                 Succeeded = true,
                
@@ -88,12 +92,18 @@ namespace DevAssess.Api.Services.auth
         {
             var user = await _userManager.FindByEmailAsync(request.Email);
 
-            if (user is null)
+            if (user is null || user.EmailConfirmed)
             {
                 return false;
             }
 
-            if (user.EmailConfirmed)
+            // Reject verification attempts during lockout.
+            if (await _userManager.IsLockedOutAsync(user))
+            {
+                return false;
+            }
+
+            if (user.VerificationCodeExpiresAt is null || DateTime.UtcNow > user.VerificationCodeExpiresAt.Value)
             {
                 return false;
             }
@@ -106,12 +116,19 @@ namespace DevAssess.Api.Services.auth
 
             if (!isValid)
             {
+                // Record an unsuccessful attempt.
+                await _userManager.AccessFailedAsync(user);
                 return false;
             }
 
+
+            // The correct code was provided.
             user.EmailConfirmed = true;
 
             var result = await _userManager.UpdateAsync(user);
+
+            // Clear the unsuccessful-attempt counter.
+            await _userManager.ResetAccessFailedCountAsync(user);
 
             return result.Succeeded;
         }
@@ -147,10 +164,73 @@ namespace DevAssess.Api.Services.auth
                 await _emailService.SendVerificationCodeAsync(user.Email!, code);
 
             user.LastVerificationEmailSentAt = now;
+            user.VerificationCodeExpiresAt = now.AddMinutes(5);
 
             var result = await _userManager.UpdateAsync(user);
 
             return result.Succeeded;
+        }
+
+        public async Task<LoginResult> LoginAsync(LoginRequest request)
+        {
+            var user = await _userManager.FindByEmailAsync(
+                request.Email);
+
+            if (user is null)
+            {
+                return new LoginResult
+                {
+                    Error = "Invalid email or password."
+                };
+            }
+
+            // Respect Identity's existing account lockout.
+            if (await _userManager.IsLockedOutAsync(user))
+            {
+                return new LoginResult
+                {
+                    Error = "Unable to sign in right now."
+                };
+            }
+
+            var validPassword =
+                await _userManager.CheckPasswordAsync(
+                    user,
+                    request.Password);
+
+            if (!validPassword)
+            {
+                await _userManager.AccessFailedAsync(user);
+
+                return new LoginResult
+                {
+                    Error = "Invalid email or password."
+                };
+            }
+
+            if (!user.EmailConfirmed)
+            {
+                return new LoginResult
+                {
+                    Error = "Please verify your email before signing in."
+                };
+            }
+
+            await _userManager.ResetAccessFailedCountAsync(user);
+
+            return new LoginResult
+            {
+                Succeeded = true,
+
+                User = new UserResponse
+                {
+                    Id = user.Id,
+                    DisplayName = user.DisplayName,
+                    Email = user.Email!,
+                    EmailConfirmed = user.EmailConfirmed,
+                    CreatedAt = user.CreatedAt
+                }
+            };
         }
 
     }

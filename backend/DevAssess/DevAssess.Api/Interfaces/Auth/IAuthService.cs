@@ -7,5 +7,7 @@ namespace DevAssess.Api.Interfaces.Auth
         Task<RegisterResult> RegisterAsync(RegisterRequest request);
         Task<bool> VerifyEmailAsync(VerifyEmailRequest request);
         Task<bool> ResendVerificationAsync(ResendVerificationRequest request);
+
+        Task<LoginResult> LoginAsync(LoginRequest request);
     }
 }
