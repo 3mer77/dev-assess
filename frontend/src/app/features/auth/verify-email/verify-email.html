@@ -1,0 +1,91 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <a routerLink="/" class="auth-logo">
+        <span class="logo-icon">◆</span>
+        <span>DevAssess</span>
+      </a>
+      <h1>Verify your email</h1>
+      <p>
+        We sent a 6-digit verification code to<br />
+        <strong class="email-display">{{ email() }}</strong>
+      </p>
+    </div>
+
+    <!-- Error -->
+    @if (errorMessage()) {
+      <div class="error-box" role="alert">
+        <p>{{ errorMessage() }}</p>
+      </div>
+    }
+
+    <!-- Success -->
+    @if (successMessage()) {
+      <div class="success-box" role="status">
+        <p>{{ successMessage() }}</p>
+      </div>
+    }
+
+    <!-- OTP Input -->
+    <div class="otp-container" (paste)="onPaste($event)">
+      @for (digit of digits(); track $index) {
+        <input
+          #otpInput
+          type="text"
+          inputmode="numeric"
+          maxlength="1"
+          class="otp-digit"
+          [class.filled]="digit !== ''"
+          [value]="digit"
+          [disabled]="loading()"
+          (input)="onDigitInput($index, $event)"
+          (keydown)="onDigitKeydown($index, $event)"
+          [attr.aria-label]="'Digit ' + ($index + 1)"
+          autocomplete="one-time-code"
+        />
+      }
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-primary btn-full"
+      id="verify-submit"
+      [disabled]="loading() || digits().join('').length !== 6"
+      (click)="submitCode()"
+    >
+      @if (loading()) {
+        <span class="spinner"></span> Verifying…
+      } @else {
+        Verify email
+      }
+    </button>
+
+    <!-- Resend -->
+    <div class="resend-section">
+      @if (resendMessage()) {
+        <p class="resend-feedback">{{ resendMessage() }}</p>
+      }
+
+      <button
+        type="button"
+        class="resend-btn"
+        id="resend-btn"
+        [disabled]="resendTimer() > 0 || resendLoading()"
+        (click)="resendCode()"
+      >
+        @if (resendLoading()) {
+          Sending…
+        } @else if (resendTimer() > 0) {
+          Resend code in {{ formattedTimer }}
+        } @else {
+          Resend code
+        }
+      </button>
+    </div>
+
+    <p class="auth-footer">
+      Wrong email?
+      <a routerLink="/register">Go back</a>
+    </p>
+  </div>
+</div>

@@ -6,5 +6,7 @@ public class LoginResult
 
     public string? Error { get; set; }
 
+    public string? AccessToken { get; set; }
+
     public UserResponse? User { get; set; }
 }

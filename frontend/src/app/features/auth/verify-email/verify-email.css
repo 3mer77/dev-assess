@@ -1,0 +1,110 @@
+/* ── Verify Email ─────────────────────────────── */
+
+.email-display {
+  color: var(--color-accent);
+  word-break: break-all;
+}
+
+/* ── OTP ─────────────────────────────────────── */
+
+.otp-container {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 8px 0 28px;
+}
+
+.otp-digit {
+  width: 52px;
+  height: 60px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-input-bg);
+  color: var(--color-text);
+  font-size: 24px;
+  font-weight: 600;
+  font-family: 'Inter', monospace;
+  text-align: center;
+  caret-color: var(--color-accent);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+}
+
+.otp-digit:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-ring);
+}
+
+.otp-digit.filled {
+  border-color: var(--color-accent-border);
+}
+
+.otp-digit:disabled {
+  opacity: 0.5;
+}
+
+/* ── Resend ──────────────────────────────────── */
+
+.resend-section {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.resend-feedback {
+  font-size: 13px;
+  color: var(--color-success);
+  margin: 0 0 8px;
+}
+
+.resend-btn {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: color 0.15s ease, background 0.15s ease;
+  font-family: inherit;
+}
+
+.resend-btn:hover:not(:disabled) {
+  color: var(--color-accent);
+  background: var(--color-surface-hover);
+}
+
+.resend-btn:disabled {
+  cursor: default;
+  color: var(--color-text-muted);
+}
+
+/* ── Success box ─────────────────────────────── */
+
+.success-box {
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+}
+
+.success-box p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-success);
+}
+
+/* ── Mobile ──────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .otp-container {
+    gap: 6px;
+  }
+
+  .otp-digit {
+    width: 44px;
+    height: 52px;
+    font-size: 20px;
+  }
+}

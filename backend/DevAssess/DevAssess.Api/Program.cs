@@ -1,13 +1,18 @@
 using DevAssess.Api.Data;
+using DevAssess.Api.Dtos.Auth;
 using DevAssess.Api.Interfaces.Auth;
 using DevAssess.Api.Interfaces.Email;
 using DevAssess.Api.Models;
 using DevAssess.Api.Services.auth;
+using DevAssess.Api.Services.Auth;
 using DevAssess.Api.Services.Email;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using System.Threading.RateLimiting;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;    
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,11 +49,40 @@ builder.Services
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders()
     .AddTokenProvider<EmailOtpTokenProvider>("EmailOtp");
-    // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-    builder.Services.AddOpenApi();
-    builder.Services.AddScoped<IAuthService, AuthService>();
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 
-    builder.Services.AddHttpClient<
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters =
+            new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+
+                ValidIssuer =
+                    builder.Configuration["Jwt:Issuer"],
+
+                ValidAudience =
+                    builder.Configuration["Jwt:Audience"],
+
+                IssuerSigningKey =
+                    new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(
+                            builder.Configuration["Jwt:Key"]!)),
+
+                ClockSkew = TimeSpan.Zero
+            };
+    });
+
+builder.Services.AddOpenApi();
+    builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddScoped<ITokenService, TokenService>();
+
+builder.Services.AddHttpClient<
     IEmailService,
     BrevoEmailService>();
 

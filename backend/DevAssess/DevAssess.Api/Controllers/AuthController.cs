@@ -1,8 +1,12 @@
 ﻿using DevAssess.Api.Dtos.Auth;
 using DevAssess.Api.Interfaces.Auth;
+using DevAssess.Api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Security.Claims;
 
 namespace DevAssess.Api.Controllers
 {
@@ -11,10 +15,12 @@ namespace DevAssess.Api.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public AuthController ( IAuthService authService )
+        public AuthController ( IAuthService authService , UserManager<ApplicationUser> userManager )
         {
             _authService = authService;
+            _userManager = userManager;
 
         }
 
@@ -91,8 +97,39 @@ namespace DevAssess.Api.Controllers
                 });
             }
 
-            return Ok(result.User);
+            return Ok(result);
         }
+
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<IActionResult> Me()
+        {
+            var userId =
+                User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? User.FindFirstValue("sub");
+
+            if (userId is null)
+            {
+                return Unauthorized();
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user is null)
+            {
+                return Unauthorized();
+            }
+
+            return Ok(new UserResponse
+            {
+                Id = user.Id,
+                DisplayName = user.DisplayName,
+                Email = user.Email!,
+                EmailConfirmed = user.EmailConfirmed,
+                CreatedAt = user.CreatedAt
+            });
+        }
+
 
     }
 }

@@ -11,11 +11,13 @@ namespace DevAssess.Api.Services.auth
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailService _emailService;
+        private readonly ITokenService _tokenService;
 
-        public AuthService (UserManager <ApplicationUser> userManager , IEmailService emailService)
+        public AuthService (UserManager <ApplicationUser> userManager , IEmailService emailService, ITokenService tokenService)
         {
             _userManager = userManager;
             _emailService = emailService;
+            _tokenService = tokenService;
 
 
         }
@@ -218,9 +220,13 @@ namespace DevAssess.Api.Services.auth
 
             await _userManager.ResetAccessFailedCountAsync(user);
 
+            var accessToken = _tokenService.CreateAccessToken(user);
+
             return new LoginResult
             {
                 Succeeded = true,
+
+                AccessToken = accessToken,
 
                 User = new UserResponse
                 {

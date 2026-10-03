@@ -1,0 +1,89 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <a routerLink="/" class="auth-logo">
+        <span class="logo-icon">◆</span>
+        <span>DevAssess</span>
+      </a>
+      <h1>Welcome back</h1>
+      <p>Sign in to your DevAssess account.</p>
+    </div>
+
+    <!-- Verified banner -->
+    @if (verifiedMessage()) {
+      <div class="success-box" role="status">
+        <p>{{ verifiedMessage() }}</p>
+      </div>
+    }
+
+    <!-- Error -->
+    @if (errorMessage()) {
+      <div class="error-box" role="alert">
+        <p>{{ errorMessage() }}</p>
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <!-- Email -->
+      <div class="form-field">
+        <label for="login-email">Email</label>
+        <input
+          id="login-email"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          placeholder="you@example.com"
+          [class.invalid]="f.email.touched && f.email.invalid"
+        />
+        @if (f.email.touched && f.email.errors) {
+          <span class="field-error">
+            @if (f.email.errors['required']) {
+              Email is required.
+            } @else if (f.email.errors['email']) {
+              Enter a valid email address.
+            }
+          </span>
+        }
+      </div>
+
+      <!-- Password -->
+      <div class="form-field">
+        <label for="login-password">Password</label>
+        <div class="input-wrapper">
+          <input
+            id="login-password"
+            [type]="showPassword() ? 'text' : 'password'"
+            formControlName="password"
+            autocomplete="current-password"
+            placeholder="••••••••"
+            [class.invalid]="f.password.touched && f.password.invalid"
+          />
+          <button type="button" class="toggle-pw" (click)="togglePassword()" tabindex="-1" aria-label="Toggle password visibility">
+            {{ showPassword() ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+        @if (f.password.touched && f.password.errors?.['required']) {
+          <span class="field-error">Password is required.</span>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-primary btn-full"
+        id="login-submit"
+        [disabled]="loading()"
+      >
+        @if (loading()) {
+          <span class="spinner"></span> Signing in…
+        } @else {
+          Sign in
+        }
+      </button>
+    </form>
+
+    <p class="auth-footer">
+      Don't have an account?
+      <a routerLink="/register">Create one</a>
+    </p>
+  </div>
+</div>
