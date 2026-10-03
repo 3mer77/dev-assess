@@ -37,16 +37,18 @@ export interface LoginResponse {
   user: User;
 }
 
+export interface RefreshResponse {
+  accessToken: string;
+}
+
 // ──────────────────────────────────────────────
 // Service-level result types
 // Components receive these — never raw HTTP details.
 // ──────────────────────────────────────────────
 
-/**
- * Discriminated union for auth operations.
- * T = the success payload type (User, message, LoginResponse, etc.)
- */
-export type AuthResult<T> =
-  | { success: true; data: T }
-  | { success: false; errors: string[] };
+export interface AuthResult<T> {
+  success: boolean;
+  data?: T;
+  errors?: string[];
+}
 

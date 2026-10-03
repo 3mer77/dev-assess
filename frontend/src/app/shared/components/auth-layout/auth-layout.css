@@ -1,0 +1,334 @@
+.split-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #ffffff;
+}
+
+/* ── Left Brand Panel ───────────────────────── */
+.brand-panel {
+  position: relative;
+  width: 400px;
+  min-width: 380px;
+  background: linear-gradient(165deg, #0b45d0 0%, #062f96 100%);
+  color: #ffffff;
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.panel-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #ffffff;
+  text-decoration: none;
+  margin-bottom: 56px;
+}
+
+.logo-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 8px;
+  color: #ffffff;
+}
+
+.brand-name {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.headline-block {
+  margin-bottom: 44px;
+}
+
+.role-icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.15);
+  margin-bottom: 20px;
+  color: #ffffff;
+}
+
+.panel-headline {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+}
+
+.panel-subheadline {
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ── Stepper ─────────────────────────────────── */
+.stepper-nav {
+  margin-bottom: auto;
+}
+
+.stepper-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.stepper-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  position: relative;
+  min-height: 64px;
+}
+
+.stepper-item:last-child {
+  min-height: auto;
+}
+
+.step-indicator-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 32px;
+}
+
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  background-color: transparent;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  z-index: 1;
+}
+
+.step-connector {
+  width: 2px;
+  flex: 1;
+  min-height: 32px;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin: 4px 0;
+}
+
+.stepper-item.is-active .step-indicator {
+  border-color: #ffffff;
+  background-color: #ffffff;
+  color: #0b45d0;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
+.stepper-item.is-completed .step-indicator {
+  border-color: #ffffff;
+  background-color: #ffffff;
+  color: #0b45d0;
+}
+
+.stepper-item.is-completed .step-connector {
+  background-color: #ffffff;
+}
+
+.step-label {
+  padding-top: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.65);
+  transition: color 0.2s ease;
+}
+
+.stepper-item.is-active .step-label {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.stepper-item.is-completed .step-label {
+  color: #ffffff;
+}
+
+/* ── Panel User Footer ───────────────────────── */
+.panel-user-footer {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.panel-user-email {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+  word-break: break-all;
+}
+
+.panel-action-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.panel-action-link:hover {
+  color: #ffffff;
+}
+
+/* ── Decorative Graphic ──────────────────────── */
+.panel-graphic {
+  position: absolute;
+  bottom: 0;
+  inset-inline-start: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.9;
+}
+
+[dir="rtl"] .panel-graphic {
+  transform: scaleX(-1);
+}
+
+/* ── Right Form Panel ────────────────────────── */
+.form-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 40px 56px;
+  background-color: var(--color-surface);
+  overflow-y: auto;
+  position: relative;
+}
+
+.auth-topbar {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 24px;
+}
+
+.auth-lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--color-surface-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 2px 8px;
+}
+
+.auth-lang-btn {
+  background: transparent;
+  border: none;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: all 120ms ease;
+}
+
+.auth-lang-btn:hover {
+  color: var(--color-text);
+}
+
+.auth-lang-btn.is-active {
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.auth-lang-sep {
+  font-size: 11px;
+  color: var(--color-border);
+}
+
+.form-container {
+  width: 100%;
+  max-width: 480px;
+}
+
+/* ── Responsive ──────────────────────────────── */
+@media (max-width: 960px) {
+  .brand-panel {
+    width: 320px;
+    min-width: 300px;
+    padding: 36px 28px;
+  }
+}
+
+@media (max-width: 800px) {
+  .split-container {
+    flex-direction: column;
+  }
+
+  .brand-panel {
+    width: 100%;
+    min-width: 100%;
+    padding: 32px 24px;
+  }
+
+  .brand-logo {
+    margin-bottom: 24px;
+  }
+
+  .headline-block {
+    margin-bottom: 24px;
+  }
+
+  .panel-headline {
+    font-size: 22px;
+  }
+
+  .stepper-list {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .stepper-item {
+    min-height: auto;
+  }
+
+  .step-connector {
+    display: none;
+  }
+
+  .form-panel {
+    padding: 40px 20px;
+  }
+}

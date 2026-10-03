@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { onboardingGuard } from './core/guards/onboarding.guard';
+import { publicAuthGuard } from './core/guards/public-auth.guard';
 
 export const routes: Routes = [
   {
@@ -11,6 +13,7 @@ export const routes: Routes = [
   },
   {
     path: 'register',
+    canActivate: [publicAuthGuard],
     loadComponent: () =>
       import('./features/auth/register/register').then(
         (m) => m.Register
@@ -25,9 +28,18 @@ export const routes: Routes = [
   },
   {
     path: 'login',
+    canActivate: [publicAuthGuard],
     loadComponent: () =>
       import('./features/auth/login/login').then(
         (m) => m.Login
+      ),
+  },
+  {
+    path: 'onboarding',
+    canActivate: [onboardingGuard],
+    loadComponent: () =>
+      import('./features/onboarding/onboarding').then(
+        (m) => m.Onboarding
       ),
   },
   {

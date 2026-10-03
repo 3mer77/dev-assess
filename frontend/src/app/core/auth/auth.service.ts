@@ -9,6 +9,7 @@ import {
   ResendVerificationRequest,
   LoginRequest,
   LoginResponse,
+  RefreshResponse,
   User,
 } from './auth.models';
 
@@ -39,7 +40,7 @@ export class AuthService {
     return this.http
       .post<User>(`${this.baseUrl}/register`, request)
       .pipe(
-        map((user) => ({ success: true as const, data: user })),
+        map((user) => ({ success: true, data: user })),
         catchError((err: HttpErrorResponse) => of(this.mapError(err, 'Registration failed. Please try again.')))
       );
   }
@@ -48,7 +49,7 @@ export class AuthService {
     return this.http
       .post<{ message: string }>(`${this.baseUrl}/verify-email`, request)
       .pipe(
-        map((res) => ({ success: true as const, data: res.message })),
+        map((res) => ({ success: true, data: res.message })),
         catchError((err: HttpErrorResponse) => of(this.mapError(err, 'Invalid or expired verification code.')))
       );
   }
@@ -57,28 +58,44 @@ export class AuthService {
     return this.http
       .post<{ message: string }>(`${this.baseUrl}/resend-verification`, request)
       .pipe(
-        map((res) => ({ success: true as const, data: res.message })),
+        map((res) => ({ success: true, data: res.message })),
         catchError((err: HttpErrorResponse) => of(this.mapError(err, 'Unable to resend code.')))
       );
   }
 
   login(request: LoginRequest): Observable<AuthResult<LoginResponse>> {
     return this.http
-      .post<LoginResponse>(`${this.baseUrl}/login`, request)
+      .post<LoginResponse>(`${this.baseUrl}/login`, request, { withCredentials: true })
       .pipe(
         map((res) => {
           if (res.succeeded && res.accessToken && res.user) {
-            return { success: true as const, data: res };
+            return { success: true, data: res };
           }
           // Backend returned 200 but login didn't succeed
-          return { success: false as const, errors: [res.error ?? 'Login failed.'] };
+          return { success: false, errors: [res.error ?? 'Login failed.'] };
         }),
         catchError((err: HttpErrorResponse) => of(this.mapError(err, 'Invalid email or password.')))
       );
   }
 
+  refresh(): Observable<RefreshResponse> {
+    return this.http.post<RefreshResponse>(
+      `${this.baseUrl}/refresh`,
+      {},
+      { withCredentials: true }
+    );
+  }
+
+  logout(): Observable<void> {
+    return this.http.post<void>(
+      `${this.baseUrl}/logout`,
+      {},
+      { withCredentials: true }
+    );
+  }
+
   getCurrentUser(): Observable<User> {
-    return this.http.get<User>(`${this.baseUrl}/me`);
+    return this.http.get<User>(`${this.baseUrl}/me`, { withCredentials: true });
   }
 
   // ── Private: HTTP error → user-facing messages ──────────

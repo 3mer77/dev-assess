@@ -1,33 +1,39 @@
-<div class="auth-page">
-  <div class="auth-card">
-    <div class="auth-header">
-      <a routerLink="/" class="auth-logo">
-        <span class="logo-icon">◆</span>
-        <span>DevAssess</span>
-      </a>
-      <h1>Verify your email</h1>
-      <p>
-        We sent a 6-digit verification code to<br />
-        <strong class="email-display">{{ email() }}</strong>
-      </p>
+<app-auth-layout
+  [headline]="'verify.title' | translate"
+  [subheadline]="'verify.subtitle' | translate"
+  [steps]="authSteps()"
+>
+  <div class="form-header">
+    <h1 class="form-title">{{ 'verify.title' | translate }}</h1>
+    <p class="form-desc">
+      {{ 'verify.subtitle' | translate }}<br />
+      <strong class="email-highlight" dir="ltr">{{ email() }}</strong>
+    </p>
+  </div>
+
+  @if (errorMessage()) {
+    <div class="alert alert-error" role="alert">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <div>{{ errorMessage() }}</div>
     </div>
+  }
 
-    <!-- Error -->
-    @if (errorMessage()) {
-      <div class="error-box" role="alert">
-        <p>{{ errorMessage() }}</p>
-      </div>
-    }
+  @if (successMessage()) {
+    <div class="alert alert-success" role="status">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+      <div>{{ successMessage() }}</div>
+    </div>
+  }
 
-    <!-- Success -->
-    @if (successMessage()) {
-      <div class="success-box" role="status">
-        <p>{{ successMessage() }}</p>
-      </div>
-    }
-
-    <!-- OTP Input -->
-    <div class="otp-container" (paste)="onPaste($event)">
+  <div class="otp-wrapper">
+    <label class="form-label" id="otp-label">{{ 'verify.instruction' | translate }}</label>
+    <div class="otp-container" dir="ltr" (paste)="onPaste($event)" aria-labelledby="otp-label">
       @for (digit of digits(); track $index) {
         <input
           #otpInput
@@ -45,47 +51,47 @@
         />
       }
     </div>
+  </div>
+
+  <button
+    type="button"
+    class="btn btn-primary btn-full btn-lg"
+    id="verify-submit"
+    [disabled]="loading() || digits().join('').length !== 6"
+    (click)="submitCode()"
+  >
+    @if (loading()) {
+      <span class="spinner"></span> {{ 'verify.verifying' | translate }}
+    } @else {
+      {{ 'verify.submitBtn' | translate }}
+    }
+  </button>
+
+  <div class="resend-block">
+    @if (resendMessage()) {
+      <p class="resend-status">{{ resendMessage() }}</p>
+    }
 
     <button
       type="button"
-      class="btn btn-primary btn-full"
-      id="verify-submit"
-      [disabled]="loading() || digits().join('').length !== 6"
-      (click)="submitCode()"
+      class="btn btn-ghost btn-sm resend-action-btn"
+      id="resend-btn"
+      [disabled]="resendTimer() > 0 || resendLoading()"
+      (click)="resendCode()"
     >
-      @if (loading()) {
-        <span class="spinner"></span> Verifying…
+      @if (resendLoading()) {
+        <span class="spinner spinner-dark"></span> {{ 'common.loading' | translate }}
+      } @else if (resendTimer() > 0) {
+        {{ 'verify.resendIn' | translate:{ seconds: resendTimer() } }}
       } @else {
-        Verify email
+        {{ 'verify.resendCode' | translate }}
       }
     </button>
+  </div>
 
-    <!-- Resend -->
-    <div class="resend-section">
-      @if (resendMessage()) {
-        <p class="resend-feedback">{{ resendMessage() }}</p>
-      }
-
-      <button
-        type="button"
-        class="resend-btn"
-        id="resend-btn"
-        [disabled]="resendTimer() > 0 || resendLoading()"
-        (click)="resendCode()"
-      >
-        @if (resendLoading()) {
-          Sending…
-        } @else if (resendTimer() > 0) {
-          Resend code in {{ formattedTimer }}
-        } @else {
-          Resend code
-        }
-      </button>
-    </div>
-
-    <p class="auth-footer">
-      Wrong email?
-      <a routerLink="/register">Go back</a>
+  <div class="form-footer">
+    <p class="back-prompt">
+      <a routerLink="/register" class="link-bold">{{ 'common.back' | translate }}</a>
     </p>
   </div>
-</div>
+</app-auth-layout>

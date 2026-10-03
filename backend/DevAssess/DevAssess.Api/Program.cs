@@ -1,18 +1,19 @@
 using DevAssess.Api.Data;
-using DevAssess.Api.Dtos.Auth;
 using DevAssess.Api.Interfaces.Auth;
 using DevAssess.Api.Interfaces.Email;
+using DevAssess.Api.Interfaces.Profile;
 using DevAssess.Api.Models;
 using DevAssess.Api.Services.auth;
 using DevAssess.Api.Services.Auth;
 using DevAssess.Api.Services.Email;
+using DevAssess.Api.Services.Profile;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Scalar.AspNetCore;
-using System.Threading.RateLimiting;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;    
 using Microsoft.IdentityModel.Tokens;
+using Scalar.AspNetCore;
+using System.Text;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,6 +82,7 @@ builder.Services
 builder.Services.AddOpenApi();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
 
 builder.Services.AddHttpClient<
     IEmailService,

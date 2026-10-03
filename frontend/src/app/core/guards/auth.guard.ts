@@ -1,19 +1,25 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthStore } from '../auth/auth.store';
+import { ProfileStore } from '../profile/profile.store';
 
 /**
- * Route guard for protected pages.
- *
- * This is a UX convenience — real security is enforced by ASP.NET [Authorize].
+ * Route guard for dashboard and protected feature pages.
+ * - Redirects unauthenticated visitors to /login.
+ * - Redirects users with incomplete onboarding to /onboarding.
  */
 export const authGuard: CanActivateFn = () => {
   const authStore = inject(AuthStore);
+  const profileStore = inject(ProfileStore);
   const router = inject(Router);
 
-  if (authStore.isAuthenticated()) {
-    return true;
+  if (!authStore.isAuthenticated()) {
+    return router.createUrlTree(['/login']);
   }
 
-  return router.createUrlTree(['/login']);
+  if (!profileStore.hasCompletedOnboarding()) {
+    return router.createUrlTree(['/onboarding']);
+  }
+
+  return true;
 };

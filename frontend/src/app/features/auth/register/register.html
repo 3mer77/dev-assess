@@ -1,133 +1,153 @@
-<div class="auth-page">
-  <div class="auth-card">
-    <div class="auth-header">
-      <a routerLink="/" class="auth-logo">
-        <span class="logo-icon">◆</span>
-        <span>DevAssess</span>
-      </a>
-      <h1>Create your account</h1>
-      <p>Start your engineering assessment journey.</p>
-    </div>
+<app-auth-layout
+  [headline]="'register.title' | translate"
+  [subheadline]="'register.subtitle' | translate"
+  [steps]="authSteps()"
+>
+  <div class="form-header">
+    <h1 class="form-title">{{ 'register.title' | translate }}</h1>
+    <p class="form-desc">{{ 'register.subtitle' | translate }}</p>
+  </div>
 
-    <!-- Server errors -->
-    @if (serverErrors().length) {
-      <div class="error-box" role="alert">
+  @if (serverErrors().length) {
+    <div class="alert alert-error" role="alert">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <div>
         @for (error of serverErrors(); track error) {
           <p>{{ error }}</p>
         }
       </div>
-    }
+    </div>
+  }
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
-      <!-- Display Name -->
-      <div class="form-field">
-        <label for="displayName">Display name</label>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <!-- Display Name -->
+    <div class="form-group">
+      <label class="form-label" for="displayName">
+        {{ 'register.displayNameLabel' | translate }} <span class="required">*</span>
+      </label>
+      <input
+        id="displayName"
+        type="text"
+        class="form-control"
+        formControlName="displayName"
+        autocomplete="name"
+        [placeholder]="'register.displayNamePlaceholder' | translate"
+        [class.is-invalid]="f.displayName.touched && f.displayName.invalid"
+      />
+      @if (f.displayName.touched && f.displayName.errors) {
+        <span class="field-error">
+          @if (f.displayName.errors['required']) {
+            {{ 'register.displayNameLabel' | translate }} is required.
+          } @else if (f.displayName.errors['minlength']) {
+            Must be at least 2 characters.
+          }
+        </span>
+      }
+    </div>
+
+    <!-- Email -->
+    <div class="form-group">
+      <label class="form-label" for="email">
+        {{ 'register.emailLabel' | translate }} <span class="required">*</span>
+      </label>
+      <input
+        id="email"
+        type="email"
+        dir="ltr"
+        class="form-control"
+        formControlName="email"
+        autocomplete="email"
+        [placeholder]="'register.emailPlaceholder' | translate"
+        [class.is-invalid]="f.email.touched && f.email.invalid"
+      />
+      @if (f.email.touched && f.email.errors) {
+        <span class="field-error">
+          @if (f.email.errors['required']) {
+            Email address is required.
+          } @else if (f.email.errors['email']) {
+            Enter a valid email address.
+          }
+        </span>
+      }
+    </div>
+
+    <!-- Password -->
+    <div class="form-group">
+      <label class="form-label" for="password">
+        {{ 'register.passwordLabel' | translate }} <span class="required">*</span>
+      </label>
+      <div class="input-pw-wrapper">
         <input
-          id="displayName"
-          type="text"
-          formControlName="displayName"
-          autocomplete="name"
-          placeholder="Amer"
-          [class.invalid]="f.displayName.touched && f.displayName.invalid"
+          id="password"
+          dir="ltr"
+          [type]="showPassword() ? 'text' : 'password'"
+          class="form-control"
+          formControlName="password"
+          autocomplete="new-password"
+          placeholder="••••••••"
+          [class.is-invalid]="f.password.touched && f.password.invalid"
         />
-        @if (f.displayName.touched && f.displayName.errors) {
-          <span class="field-error">
-            @if (f.displayName.errors['required']) {
-              Display name is required.
-            } @else if (f.displayName.errors['minlength']) {
-              Must be at least 2 characters.
-            } @else if (f.displayName.errors['maxlength']) {
-              Must be under 100 characters.
-            }
-          </span>
-        }
+        <button type="button" class="btn-toggle-pw" (click)="togglePassword()" tabindex="-1">
+          {{ (showPassword() ? 'login.hidePassword' : 'login.showPassword') | translate }}
+        </button>
       </div>
 
-      <!-- Email -->
-      <div class="form-field">
-        <label for="email">Email</label>
+      <div class="pw-rules">
+        <span class="pw-rule-chip" [class.met]="(form.value.password?.length ?? 0) >= 8">{{ 'register.reqMinLength' | translate }}</span>
+        <span class="pw-rule-chip" [class.met]="!!(form.value.password && /[A-Z]/.test(form.value.password))">{{ 'register.reqUpper' | translate }}</span>
+        <span class="pw-rule-chip" [class.met]="!!(form.value.password && /[a-z]/.test(form.value.password))">{{ 'register.reqLower' | translate }}</span>
+        <span class="pw-rule-chip" [class.met]="!!(form.value.password && /[0-9]/.test(form.value.password))">{{ 'register.reqDigit' | translate }}</span>
+        <span class="pw-rule-chip" [class.met]="!!(form.value.password && /[^A-Za-z0-9]/.test(form.value.password))">{{ 'register.reqNonAlpha' | translate }}</span>
+      </div>
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="form-group">
+      <label class="form-label" for="confirmPassword">
+        {{ 'register.confirmPasswordLabel' | translate }} <span class="required">*</span>
+      </label>
+      <div class="input-pw-wrapper">
         <input
-          id="email"
-          type="email"
-          formControlName="email"
-          autocomplete="email"
-          placeholder="you@example.com"
-          [class.invalid]="f.email.touched && f.email.invalid"
+          id="confirmPassword"
+          dir="ltr"
+          [type]="showConfirmPassword() ? 'text' : 'password'"
+          class="form-control"
+          formControlName="confirmPassword"
+          autocomplete="new-password"
+          placeholder="••••••••"
+          [class.is-invalid]="f.confirmPassword.touched && !passwordsMatch"
         />
-        @if (f.email.touched && f.email.errors) {
-          <span class="field-error">
-            @if (f.email.errors['required']) {
-              Email is required.
-            } @else if (f.email.errors['email']) {
-              Enter a valid email address.
-            }
-          </span>
-        }
+        <button type="button" class="btn-toggle-pw" (click)="toggleConfirmPassword()" tabindex="-1">
+          {{ (showConfirmPassword() ? 'login.hidePassword' : 'login.showPassword') | translate }}
+        </button>
       </div>
+      @if (f.confirmPassword.touched && !passwordsMatch) {
+        <span class="field-error">Passwords do not match.</span>
+      }
+    </div>
 
-      <!-- Password -->
-      <div class="form-field">
-        <label for="password">Password</label>
-        <div class="input-wrapper">
-          <input
-            id="password"
-            [type]="showPassword() ? 'text' : 'password'"
-            formControlName="password"
-            autocomplete="new-password"
-            placeholder="••••••••"
-            [class.invalid]="f.password.touched && f.password.invalid"
-          />
-          <button type="button" class="toggle-pw" (click)="togglePassword()" tabindex="-1" aria-label="Toggle password visibility">
-            {{ showPassword() ? 'Hide' : 'Show' }}
-          </button>
-        </div>
-        <ul class="pw-hints">
-          <li [class.met]="(form.value.password?.length ?? 0) >= 8">At least 8 characters</li>
-          <li [class.met]="!!(form.value.password && /[A-Z]/.test(form.value.password))">One uppercase letter</li>
-          <li [class.met]="!!(form.value.password && /[a-z]/.test(form.value.password))">One lowercase letter</li>
-          <li [class.met]="!!(form.value.password && /[0-9]/.test(form.value.password))">One number</li>
-          <li [class.met]="!!(form.value.password && /[^A-Za-z0-9]/.test(form.value.password))">One special character</li>
-        </ul>
-      </div>
+    <button
+      type="submit"
+      class="btn btn-primary btn-full btn-lg"
+      id="register-submit"
+      [disabled]="loading()"
+    >
+      @if (loading()) {
+        <span class="spinner"></span> {{ 'register.creating' | translate }}
+      } @else {
+        {{ 'register.submitBtn' | translate }}
+      }
+    </button>
+  </form>
 
-      <!-- Confirm Password -->
-      <div class="form-field">
-        <label for="confirmPassword">Confirm password</label>
-        <div class="input-wrapper">
-          <input
-            id="confirmPassword"
-            [type]="showConfirmPassword() ? 'text' : 'password'"
-            formControlName="confirmPassword"
-            autocomplete="new-password"
-            placeholder="••••••••"
-            [class.invalid]="f.confirmPassword.touched && !passwordsMatch"
-          />
-          <button type="button" class="toggle-pw" (click)="toggleConfirmPassword()" tabindex="-1" aria-label="Toggle confirm password visibility">
-            {{ showConfirmPassword() ? 'Hide' : 'Show' }}
-          </button>
-        </div>
-        @if (f.confirmPassword.touched && !passwordsMatch) {
-          <span class="field-error">Passwords do not match.</span>
-        }
-      </div>
-
-      <button
-        type="submit"
-        class="btn btn-primary btn-full"
-        id="register-submit"
-        [disabled]="loading()"
-      >
-        @if (loading()) {
-          <span class="spinner"></span> Creating account…
-        } @else {
-          Create account
-        }
-      </button>
-    </form>
-
-    <p class="auth-footer">
-      Already have an account?
-      <a routerLink="/login">Sign in</a>
+  <div class="form-footer">
+    <p class="signin-prompt">
+      {{ 'auth.alreadyHaveAccount' | translate }}
+      <a routerLink="/login" class="link-bold">{{ 'auth.signInLink' | translate }}</a>
     </p>
   </div>
-</div>
+</app-auth-layout>

@@ -97,7 +97,20 @@ namespace DevAssess.Api.Controllers
                 });
             }
 
-            return Ok(result);
+            Response.Cookies.Append("refreshToken",result.RefreshToken!,new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = result.RefreshTokenExpiresAt
+            });
+
+            return Ok(new
+            {
+                succeeded = true,
+                accessToken = result.AccessToken,
+                user = result.User
+            });
         }
 
         [Authorize]
@@ -120,6 +133,8 @@ namespace DevAssess.Api.Controllers
                 return Unauthorized();
             }
 
+
+
             return Ok(new UserResponse
             {
                 Id = user.Id,
@@ -130,6 +145,72 @@ namespace DevAssess.Api.Controllers
             });
         }
 
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh()
+        {
+            var rawRefreshToken =
+                Request.Cookies["refreshToken"];
+
+            if (string.IsNullOrWhiteSpace(rawRefreshToken))
+            {
+                return Unauthorized(new
+                {
+                    message = "Refresh token is missing."
+                });
+            }
+
+            var result =
+                await _authService.RefreshAsync(
+                    rawRefreshToken);
+
+            if (!result.Succeeded)
+            {
+                return Unauthorized(new
+                {
+                    message = result.Error
+                });
+            }
+
+            Response.Cookies.Append(
+                "refreshToken",
+                result.RefreshToken!,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict,
+                    Expires = result.RefreshTokenExpiresAt
+                });
+
+            return Ok(new
+            {
+                accessToken = result.AccessToken
+            });
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            var rawRefreshToken =
+                Request.Cookies["refreshToken"];
+
+            if (!string.IsNullOrWhiteSpace(rawRefreshToken))
+            {
+                await _authService.LogoutAsync(
+                    rawRefreshToken);
+            }
+
+            Response.Cookies.Delete(
+                "refreshToken",
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict
+                });
+
+            return NoContent();
+        }
 
     }
 }

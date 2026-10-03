@@ -1,85 +1,159 @@
-<div class="landing">
-  <!-- Navigation -->
-  <nav class="nav">
-    <div class="nav-inner">
-      <a routerLink="/" class="logo">
-        <span class="logo-icon">◆</span>
-        <span class="logo-text">DevAssess</span>
+<div class="landing-container">
+  <!-- Top Navigation Header -->
+  <header class="landing-header">
+    <div class="header-inner">
+      <a routerLink="/" class="brand-logo">
+        <span class="logo-mark">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"/>
+            <polyline points="8 6 2 12 8 18"/>
+          </svg>
+        </span>
+        <span class="brand-name">{{ 'brand.name' | translate }}</span>
       </a>
-      <a routerLink="/login" class="nav-link">Sign In</a>
-    </div>
-  </nav>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="hero-inner">
-      <div class="hero-badge">AI-Powered Engineering Assessment</div>
+      <nav class="nav-links">
+        <a href="#how-it-works" class="nav-link">{{ 'landing.workflowTitle' | translate }}</a>
+        <a href="#why-devassess" class="nav-link">Why {{ 'brand.name' | translate }}</a>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Language Switcher in Landing Header -->
+        <button
+          type="button"
+          class="btn btn-ghost btn-sm"
+          (click)="toggleLanguage()"
+          [title]="'lang.label' | translate"
+        >
+          {{ langService.currentLanguage() === 'en' ? 'العربية' : 'English' }}
+        </button>
+
+        <a routerLink="/login" class="btn btn-ghost btn-sm" id="nav-login">
+          {{ 'landing.signIn' | translate }}
+        </a>
+        <a routerLink="/register" class="btn btn-primary btn-sm" id="nav-register">
+          {{ 'landing.startAssessment' | translate }}
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        {{ 'landing.tag' | translate }}
+      </div>
+
       <h1 class="hero-title">
-        Practice engineering the way<br />
-        <span class="hero-accent">real engineering is evaluated.</span>
+        {{ 'landing.heroTitle' | translate }}
       </h1>
-      <p class="hero-subtitle">
-        Tell DevAssess your target role and technical background.
-        The platform generates personalized debugging, API design,
-        architecture, and code reasoning challenges — then evaluates
-        your evidence and adapts the next session.
+
+      <p class="hero-lead">
+        {{ 'landing.heroSubtitle' | translate }}
       </p>
-      <div class="hero-actions">
-        <a routerLink="/register" class="btn btn-primary" id="cta-start">Start Assessing</a>
-        <a routerLink="/login" class="btn btn-secondary" id="cta-signin">Sign In</a>
+
+      <div class="hero-cta-group">
+        <a routerLink="/register" class="btn btn-primary btn-lg" id="hero-get-started">
+          {{ 'landing.startAssessment' | translate }}
+          <svg class="flip-rtl" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        </a>
+        <a routerLink="/login" class="btn btn-secondary btn-lg" id="hero-sign-in">
+          {{ 'landing.signIn' | translate }}
+        </a>
+      </div>
+
+      <div class="role-pills">
+        <span class="role-pill-label">
+          {{ langService.currentLanguage() === 'ar' ? 'مُصمم من أجل:' : 'Tailored for:' }}
+        </span>
+        <span class="role-pill">{{ 'landing.roleBackend' | translate }}</span>
+        <span class="role-pill">{{ 'landing.roleFrontend' | translate }}</span>
+        <span class="role-pill">{{ 'landing.roleFullstack' | translate }}</span>
+        <span class="role-pill">{{ 'landing.roleDevops' | translate }}</span>
       </div>
     </div>
   </section>
 
-  <!-- Features -->
-  <section class="features">
-    <div class="features-inner">
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-            <path d="M2 17l10 5 10-5"/>
-            <path d="M2 12l10 5 10-5"/>
+  <!-- How It Works Section -->
+  <section class="section how-it-works-section" id="how-it-works">
+    <div class="section-header">
+      <div class="section-tag">
+        {{ langService.currentLanguage() === 'ar' ? 'منهجية العمل' : 'Workflow' }}
+      </div>
+      <h2 class="section-title">{{ 'landing.workflowTitle' | translate }}</h2>
+      <p class="section-desc">{{ 'landing.workflowSubtitle' | translate }}</p>
+    </div>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">01</div>
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
           </svg>
         </div>
-        <h3 class="feature-title">Adaptive Challenges</h3>
-        <p class="feature-desc">
-          Challenges will adjust based on your previous evidence
-          and demonstrated skill level.
-        </p>
+        <h3 class="step-title">{{ 'landing.step1Title' | translate }}</h3>
+        <p class="step-text">{{ 'landing.step1Desc' | translate }}</p>
       </div>
 
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <div class="step-card">
+        <div class="step-number">02</div>
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="16 18 22 12 16 6"/>
             <polyline points="8 6 2 12 8 18"/>
           </svg>
         </div>
-        <h3 class="feature-title">Real Engineering Reasoning</h3>
-        <p class="feature-desc">
-          Debugging, architecture decisions, API design,
-          and code explanation — not trivia quizzes.
-        </p>
+        <h3 class="step-title">{{ 'landing.step2Title' | translate }}</h3>
+        <p class="step-text">{{ 'landing.step2Desc' | translate }}</p>
       </div>
 
-      <div class="feature-card">
-        <div class="feature-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+      <div class="step-card">
+        <div class="step-number">03</div>
+        <div class="step-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
           </svg>
         </div>
-        <h3 class="feature-title">Skill Evidence</h3>
-        <p class="feature-desc">
-          Track demonstrated strengths and weaknesses
-          over time with detailed skill profiles.
-        </p>
+        <h3 class="step-title">{{ 'landing.step3Title' | translate }}</h3>
+        <p class="step-text">{{ 'landing.step3Desc' | translate }}</p>
       </div>
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <p>&copy; 2026 DevAssess. Adaptive engineering assessment.</p>
+  <!-- Final CTA Section -->
+  <section class="cta-banner-section">
+    <div class="cta-banner-inner">
+      <h2 class="cta-title">{{ 'landing.ctaTitle' | translate }}</h2>
+      <p class="cta-subtitle">{{ 'landing.ctaSubtitle' | translate }}</p>
+      <div class="cta-actions">
+        <a routerLink="/register" class="btn btn-primary btn-lg" id="footer-get-started">
+          {{ 'landing.ctaButton' | translate }}
+        </a>
+        <a routerLink="/login" class="btn btn-secondary btn-lg" id="footer-sign-in">
+          {{ 'landing.signIn' | translate }}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Minimal Footer -->
+  <footer class="landing-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="footer-logo">◆ {{ 'brand.name' | translate }}</span>
+        <span class="footer-copy">&copy; 2026 {{ 'landing.footerRights' | translate }}</span>
+      </div>
+      <div class="footer-links">
+        <a routerLink="/login" class="footer-link">{{ 'landing.signIn' | translate }}</a>
+        <a routerLink="/register" class="footer-link">{{ 'auth.createAccountLink' | translate }}</a>
+      </div>
+    </div>
   </footer>
 </div>

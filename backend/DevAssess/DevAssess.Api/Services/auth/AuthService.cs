@@ -1,9 +1,12 @@
-﻿using DevAssess.Api.Dtos.Auth;
+﻿using DevAssess.Api.Data;
+using DevAssess.Api.Dtos.Auth;
 using DevAssess.Api.Interfaces.Auth;
 using DevAssess.Api.Interfaces.Email;
 using DevAssess.Api.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace DevAssess.Api.Services.auth
 {
@@ -13,11 +16,15 @@ namespace DevAssess.Api.Services.auth
         private readonly IEmailService _emailService;
         private readonly ITokenService _tokenService;
 
-        public AuthService (UserManager <ApplicationUser> userManager , IEmailService emailService, ITokenService tokenService)
+        private readonly AppDbContext _dbContext;
+
+        public AuthService (UserManager <ApplicationUser> userManager , IEmailService emailService,
+            ITokenService tokenService , AppDbContext dbContext)
         {
             _userManager = userManager;
             _emailService = emailService;
             _tokenService = tokenService;
+            _dbContext = dbContext;
 
 
         }
@@ -221,12 +228,15 @@ namespace DevAssess.Api.Services.auth
             await _userManager.ResetAccessFailedCountAsync(user);
 
             var accessToken = _tokenService.CreateAccessToken(user);
+            var refreshToken = await _tokenService.CreateRefreshTokenAsync(user);
 
             return new LoginResult
             {
                 Succeeded = true,
 
                 AccessToken = accessToken,
+                RefreshToken = refreshToken.RawToken,
+                RefreshTokenExpiresAt = refreshToken.ExpiresAt,
 
                 User = new UserResponse
                 {
@@ -238,6 +248,109 @@ namespace DevAssess.Api.Services.auth
                 }
             };
         }
+        public async Task<RefreshResult> RefreshAsync(string rawRefreshToken)
+        {
+            if (string.IsNullOrWhiteSpace(rawRefreshToken))
+            {
+                return new RefreshResult
+                {
+                    Error = "Invalid refresh token."
+                };
+            }
+
+            var tokenHash =
+                _tokenService.HashRefreshToken(rawRefreshToken);
+
+            await using var transaction =
+                await _dbContext.Database.BeginTransactionAsync(
+                    IsolationLevel.Serializable);
+
+            var existingToken =
+                await _dbContext.RefreshTokens
+                    .Include(token => token.User)
+                    .SingleOrDefaultAsync(
+                        token => token.TokenHash == tokenHash);
+
+            if (existingToken is null)
+            {
+                return new RefreshResult
+                {
+                    Error = "Invalid refresh token."
+                };
+            }
+
+            if (existingToken.RevokedAt is not null ||
+                existingToken.ExpiresAt <= DateTime.UtcNow)
+            {
+                return new RefreshResult
+                {
+                    Error = "Refresh token is no longer valid."
+                };
+            }
+
+            var now = DateTime.UtcNow;
+
+            existingToken.RevokedAt = now;
+
+            var newRefreshToken =
+                await _tokenService.CreateRefreshTokenAsync(
+                    existingToken.User);
+
+            existingToken.ReplacedByTokenId =
+                newRefreshToken.TokenId;
+
+            await _dbContext.SaveChangesAsync();
+
+            var newAccessToken =
+                _tokenService.CreateAccessToken(
+                    existingToken.User);
+
+            await transaction.CommitAsync();
+
+            return new RefreshResult
+            {
+                Succeeded = true,
+
+                AccessToken = newAccessToken,
+
+                RefreshToken =
+                    newRefreshToken.RawToken,
+
+                RefreshTokenExpiresAt =
+                    newRefreshToken.ExpiresAt
+            };
+        }
+
+        public async Task<bool> LogoutAsync(string rawRefreshToken)
+        {
+            if (string.IsNullOrWhiteSpace(rawRefreshToken))
+            {
+                return false;
+            }
+
+            var tokenHash =
+                _tokenService.HashRefreshToken(rawRefreshToken);
+
+            var refreshToken =
+                await _dbContext.RefreshTokens
+                    .SingleOrDefaultAsync(
+                        token => token.TokenHash == tokenHash);
+
+            if (refreshToken is null)
+            {
+                return false;
+            }
+
+            if (refreshToken.RevokedAt is null)
+            {
+                refreshToken.RevokedAt = DateTime.UtcNow;
+
+                await _dbContext.SaveChangesAsync();
+            }
+
+            return true;
+        }
+
 
     }
 }

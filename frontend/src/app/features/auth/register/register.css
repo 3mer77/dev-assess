@@ -1,43 +1,85 @@
-/* Register page — component-specific styles only.
-   Layout inherits from global auth-page styles in styles.css */
-
-.pw-hints {
-  list-style: none;
-  padding: 0;
-  margin: 8px 0 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4px 16px;
+.form-header {
+  margin-bottom: 28px;
 }
 
-.pw-hints li {
-  font-size: 12px;
-  color: var(--color-text-muted);
-  padding-left: 18px;
+.form-title {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  margin-bottom: 6px;
+}
+
+.form-desc {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.input-pw-wrapper {
   position: relative;
-  line-height: 1.6;
 }
 
-.pw-hints li::before {
-  content: '○';
+.input-pw-wrapper .form-control {
+  padding-right: 64px;
+}
+
+.btn-toggle-pw {
   position: absolute;
-  left: 0;
-  font-size: 10px;
-  line-height: 1.9;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
   color: var(--color-text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: color 0.15s ease;
 }
 
-.pw-hints li.met {
-  color: var(--color-success);
+.btn-toggle-pw:hover {
+  color: var(--color-text-primary);
 }
 
-.pw-hints li.met::before {
-  content: '●';
-  color: var(--color-success);
+.pw-rules {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
 }
 
-@media (max-width: 480px) {
-  .pw-hints {
-    grid-template-columns: 1fr;
-  }
+.pw-rule-chip {
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 500;
+  background-color: var(--color-surface-subtle);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  transition: all 0.15s ease;
+}
+
+.pw-rule-chip.met {
+  background-color: var(--color-success-bg);
+  color: #065f46;
+  border-color: var(--color-success-border);
+}
+
+.form-footer {
+  margin-top: 28px;
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid var(--color-border);
+}
+
+.signin-prompt {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+}
+
+.link-bold {
+  font-weight: 600;
+  color: var(--color-primary);
 }

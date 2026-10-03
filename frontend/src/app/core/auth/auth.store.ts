@@ -34,6 +34,11 @@ export class AuthStore {
     this.saveUser(user);
   }
 
+  setAccessToken(token: string): void {
+    this._accessToken.set(token);
+    this.saveToken(token);
+  }
+
   setUser(user: User): void {
     this._user.set(user);
     this.saveUser(user);
@@ -44,6 +49,9 @@ export class AuthStore {
     this._user.set(null);
     this.removeToken();
     this.removeUser();
+    try {
+      sessionStorage.removeItem('devassess_learning_profile');
+    } catch { /* noop */ }
   }
 
   markInitialized(): void {
