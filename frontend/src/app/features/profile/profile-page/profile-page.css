@@ -1,0 +1,73 @@
+.profile-view-wrapper {
+  max-width: 860px;
+}
+
+.section-header-compact {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+}
+
+.section-hint {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+}
+
+.profile-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.context-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+
+.context-card-full {
+  grid-column: 1 / -1;
+}
+
+.context-label {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+}
+
+.context-value {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.context-bio {
+  font-size: 13.5px;
+  color: var(--color-text-secondary);
+  white-space: pre-wrap;
+  font-weight: 400;
+}
+
+@media (max-width: 900px) {
+  .profile-meta-grid {
+    grid-template-columns: 1fr;
+  }
+}

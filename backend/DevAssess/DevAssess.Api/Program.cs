@@ -1,8 +1,10 @@
 using DevAssess.Api.Data;
+using DevAssess.Api.Interfaces.Assessment;
 using DevAssess.Api.Interfaces.Auth;
 using DevAssess.Api.Interfaces.Email;
 using DevAssess.Api.Interfaces.Profile;
 using DevAssess.Api.Models;
+using DevAssess.Api.Services.Assessment;
 using DevAssess.Api.Services.auth;
 using DevAssess.Api.Services.Auth;
 using DevAssess.Api.Services.Email;
@@ -83,6 +85,18 @@ builder.Services.AddOpenApi();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IProfileService, ProfileService>();
+builder.Services.AddScoped<ISessionService, SessionService>();
+builder.Services.AddScoped<
+    IAssessmentPlanner,
+    GeminiAssessmentPlanner>();
+
+builder.Services.AddSingleton<
+    ISessionPlanValidator,
+    SessionPlanValidator>();
+
+builder.Services.AddScoped<
+    ISessionService,
+    SessionService>();
 
 builder.Services.AddHttpClient<
     IEmailService,

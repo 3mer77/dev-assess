@@ -1,0 +1,49 @@
+<div class="profile-view-wrapper">
+  <div class="section-header-compact">
+    <h2 class="section-title">{{ 'profile.title' | translate }}</h2>
+    <span class="section-hint">{{ 'profile.subtitle' | translate }}</span>
+  </div>
+
+  <div class="profile-meta-grid">
+    <div class="context-card">
+      <span class="context-label">{{ 'profile.fullName' | translate }}</span>
+      <p class="context-value">{{ user()?.displayName }}</p>
+    </div>
+
+    <div class="context-card">
+      <span class="context-label">{{ 'profile.email' | translate }}</span>
+      <p class="context-value" dir="ltr">{{ user()?.email }}</p>
+    </div>
+
+    <div class="context-card">
+      <span class="context-label">{{ 'profile.verification' | translate }}</span>
+      <p class="context-value">
+        @if (user()?.emailConfirmed) {
+          <span class="badge badge-success">{{ 'profile.verifiedBadge' | translate }}</span>
+        } @else {
+          <span class="badge badge-neutral">{{ 'profile.unverifiedBadge' | translate }}</span>
+        }
+      </p>
+    </div>
+
+    <div class="context-card">
+      <span class="context-label">{{ 'home.targetRole' | translate }}</span>
+      <p class="context-value">{{ profile()?.targetRole || 'Not configured' }}</p>
+    </div>
+
+    <div class="context-card">
+      <span class="context-label">{{ 'home.sessionLength' | translate }}</span>
+      <p class="context-value">{{ profile()?.preferredSessionMinutes || 20 }} {{ langService.currentLanguage() === 'ar' ? 'دقيقة' : 'min' }}</p>
+    </div>
+
+    <div class="context-card">
+      <span class="context-label">{{ 'home.primaryGoal' | translate }}</span>
+      <p class="context-value">{{ profile()?.goal || 'Not configured' }}</p>
+    </div>
+
+    <div class="context-card context-card-full">
+      <span class="context-label">{{ 'home.background' | translate }}</span>
+      <p class="context-value context-bio">{{ profile()?.background || 'No details provided' }}</p>
+    </div>
+  </div>
+</div>

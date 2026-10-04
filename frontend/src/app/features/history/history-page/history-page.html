@@ -1,0 +1,17 @@
+<div class="view-empty-state">
+  <div class="empty-icon-wrap">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <polyline points="12 6 12 12 16 14"/>
+    </svg>
+  </div>
+  <h2 class="empty-title">{{ 'history.emptyTitle' | translate }}</h2>
+  <p class="empty-description">
+    {{ 'history.emptyDesc' | translate }}
+  </p>
+  <div class="empty-actions">
+    <a routerLink="/dashboard" class="btn btn-secondary btn-sm">
+      {{ 'empty.returnHome' | translate }}
+    </a>
+  </div>
+</div>

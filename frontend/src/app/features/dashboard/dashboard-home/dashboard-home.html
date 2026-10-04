@@ -1,422 +1,108 @@
-<div class="linear-layout">
-  <!-- Left Sidebar (Linear Style) -->
-  <aside class="linear-sidebar">
-    <!-- Workspace Header -->
-    <div class="workspace-header">
-      <div class="workspace-avatar">DA</div>
-      <div class="workspace-info">
-        <span class="workspace-name">{{ 'brand.name' | translate }}</span>
-        <span class="workspace-tier">{{ 'brand.tagline' | translate }}</span>
-      </div>
-    </div>
-
-    <!-- Navigation Menu -->
-    <nav class="sidebar-nav">
-      <div class="nav-group-title">{{ 'nav.workspace' | translate }}</div>
-      <ul class="nav-list">
-        <li>
-          <button
-            type="button"
-            class="nav-item"
-            [class.is-active]="activeSection() === 'home'"
-            (click)="setSection('home')"
-          >
-            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-              <polyline points="9 22 9 12 15 12 15 22"/>
-            </svg>
-            <span class="nav-text">{{ 'nav.home' | translate }}</span>
-          </button>
-        </li>
-        <li>
-          <button
-            type="button"
-            class="nav-item"
-            [class.is-active]="activeSection() === 'practice'"
-            (click)="setSection('practice')"
-          >
-            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="16 18 22 12 16 6"/>
-              <polyline points="8 6 2 12 8 18"/>
-            </svg>
-            <span class="nav-text">{{ 'nav.practice' | translate }}</span>
-          </button>
-        </li>
-        <li>
-          <button
-            type="button"
-            class="nav-item"
-            [class.is-active]="activeSection() === 'skills'"
-            (click)="setSection('skills')"
-          >
-            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-            </svg>
-            <span class="nav-text">{{ 'nav.skills' | translate }}</span>
-          </button>
-        </li>
-        <li>
-          <button
-            type="button"
-            class="nav-item"
-            [class.is-active]="activeSection() === 'history'"
-            (click)="setSection('history')"
-          >
-            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12 6 12 12 16 14"/>
-            </svg>
-            <span class="nav-text">{{ 'nav.history' | translate }}</span>
-          </button>
-        </li>
-      </ul>
-
-      <!-- Separated Lower Section: Profile -->
-      <div class="nav-group-title nav-separator-title">{{ 'nav.account' | translate }}</div>
-      <ul class="nav-list">
-        <li>
-          <button
-            type="button"
-            class="nav-item"
-            [class.is-active]="activeSection() === 'profile'"
-            (click)="setSection('profile')"
-          >
-            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-              <circle cx="12" cy="7" r="4"/>
-            </svg>
-            <span class="nav-text">{{ 'nav.profile' | translate }}</span>
-          </button>
-        </li>
-      </ul>
-    </nav>
-
-    <!-- User Profile Footer in Sidebar -->
-    <div class="sidebar-user-footer">
-      @if (user(); as u) {
-        <div class="user-pill-info" (click)="setSection('profile')" title="View profile">
-          <div class="user-avatar-circle">{{ u.displayName.charAt(0).toUpperCase() }}</div>
-          <div class="user-text-meta">
-            <span class="user-name">{{ u.displayName }}</span>
-            <span class="user-email-sub" dir="ltr">{{ u.email }}</span>
-          </div>
-        </div>
+<!-- Header Section -->
+<header class="dashboard-header">
+  <div class="header-main">
+    <h1 class="welcome-title">{{ 'home.welcome' | translate:{ name: user()?.displayName } }}</h1>
+    <div class="metadata-row">
+      <span class="metadata-item">{{ profile()?.targetRole || 'Software Engineering' }}</span>
+      <span class="metadata-dot">·</span>
+      <span class="metadata-item">{{ 'home.preferredSession' | translate:{ minutes: profile()?.preferredSessionMinutes || 20 } }}</span>
+      @if (user()?.emailConfirmed) {
+        <span class="metadata-dot">·</span>
+        <span class="verified-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          {{ 'home.verified' | translate }}
+        </span>
       }
-      <button type="button" class="btn-sidebar-logout" (click)="signOut()" [title]="'nav.signOut' | translate">
-        <svg class="flip-rtl" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-          <polyline points="16 17 21 12 16 7"/>
-          <line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
+    </div>
+  </div>
+</header>
+
+<!-- Main Primary Section: Your First Adaptive Session -->
+<section class="first-session-card">
+  <div class="first-session-content">
+    <div class="session-eyebrow">{{ 'home.eyebrow' | translate }}</div>
+    <h2 class="session-title">{{ 'home.sessionTitle' | translate }}</h2>
+    <p class="session-copy">
+      {{ 'home.sessionCopy' | translate }}
+    </p>
+    <div class="session-actions">
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="triggerFirstSession()"
+        [disabled]="isGenerating()"
+      >
+        @if (isGenerating()) {
+          <span class="spinner-small" aria-hidden="true"></span>
+          <span>{{ 'session.generating' | translate }}</span>
+        } @else {
+          <span>{{ 'home.buildSessionBtn' | translate }}</span>
+          <svg class="flip-rtl" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="12 5 19 12 12 19"/>
+          </svg>
+        }
       </button>
     </div>
-  </aside>
 
-  <!-- Main View Area (Linear Style) -->
-  <div class="linear-main">
-    <!-- Top Action Bar -->
-    <header class="linear-topbar">
-      <div class="topbar-left">
-        <span class="breadcrumb-item">{{ 'brand.name' | translate }}</span>
-        <span class="breadcrumb-separator">/</span>
-        <span class="breadcrumb-item is-current">{{ ('nav.' + activeSection()) | translate }}</span>
-      </div>
-
-      <!-- Restrained Controls in Top-Right Toolbar (Language & Theme) -->
-      <div class="topbar-actions">
-        <!-- Subtle Language Selector -->
-        <div class="lang-control-group" role="group" aria-label="Language selector">
-          <button
-            type="button"
-            class="lang-pill-btn"
-            [class.is-active]="langService.currentLanguage() === 'en'"
-            (click)="setLanguage('en')"
-            title="English"
-          >
-            EN
-          </button>
-          <button
-            type="button"
-            class="lang-pill-btn"
-            [class.is-active]="langService.currentLanguage() === 'ar'"
-            (click)="setLanguage('ar')"
-            title="العربية"
-          >
-            عربي
-          </button>
-        </div>
-
-        <!-- Restrained Theme Selector -->
-        <div class="theme-control-group" role="group" aria-label="Theme selector">
-          <button
-            type="button"
-            class="theme-pill-btn"
-            [class.is-active]="themeService.preference() === 'system'"
-            (click)="setTheme('system')"
-            title="System theme"
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-              <line x1="8" y1="21" x2="16" y2="21"/>
-              <line x1="12" y1="17" x2="12" y2="21"/>
-            </svg>
-            <span>{{ 'theme.auto' | translate }}</span>
-          </button>
-          <button
-            type="button"
-            class="theme-pill-btn"
-            [class.is-active]="themeService.preference() === 'light'"
-            (click)="setTheme('light')"
-            title="Light theme"
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="1" x2="12" y2="3"/>
-              <line x1="12" y1="21" x2="12" y2="23"/>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-              <line x1="1" y1="12" x2="3" y2="12"/>
-              <line x1="21" y1="12" x2="23" y2="12"/>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-            </svg>
-            <span>{{ 'theme.light' | translate }}</span>
-          </button>
-          <button
-            type="button"
-            class="theme-pill-btn"
-            [class.is-active]="themeService.preference() === 'dark'"
-            (click)="setTheme('dark')"
-            title="Dark theme"
-          >
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-            </svg>
-            <span>{{ 'theme.dark' | translate }}</span>
-          </button>
+    <!-- Active Generation Feedback -->
+    @if (isGenerating()) {
+      <div class="session-generating-banner">
+        <div class="generating-pulse"></div>
+        <div class="generating-text">
+          <strong>{{ 'session.generating' | translate }}</strong>
+          <p>{{ 'session.generatingSubtitle' | translate }}</p>
         </div>
       </div>
-    </header>
+    }
 
-    <!-- Scrollable Workspace Body -->
-    <main class="linear-content">
-      @switch (activeSection()) {
-        <!-- ── HOME VIEW ───────────────────────────────── -->
-        @case ('home') {
-          <!-- Header Section -->
-          <header class="dashboard-header">
-            <div class="header-main">
-              <h1 class="welcome-title">{{ 'home.welcome' | translate:{ name: user()?.displayName } }}</h1>
-              <div class="metadata-row">
-                <span class="metadata-item">{{ profile()?.targetRole || 'Software Engineering' }}</span>
-                <span class="metadata-dot">·</span>
-                <span class="metadata-item">{{ 'home.preferredSession' | translate:{ minutes: profile()?.preferredSessionMinutes || 20 } }}</span>
-                @if (user()?.emailConfirmed) {
-                  <span class="metadata-dot">·</span>
-                  <span class="verified-badge">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                    {{ 'home.verified' | translate }}
-                  </span>
-                }
-              </div>
-            </div>
-          </header>
-
-          <!-- Main Primary Section: Your First Adaptive Session -->
-          <section class="first-session-card">
-            <div class="first-session-content">
-              <div class="session-eyebrow">{{ 'home.eyebrow' | translate }}</div>
-              <h2 class="session-title">{{ 'home.sessionTitle' | translate }}</h2>
-              <p class="session-copy">
-                {{ 'home.sessionCopy' | translate }}
-              </p>
-              <div class="session-actions">
-                <button type="button" class="btn btn-primary" (click)="triggerFirstSession()">
-                  {{ 'home.buildSessionBtn' | translate }}
-                  <svg class="flip-rtl" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12"/>
-                    <polyline points="12 5 19 12 12 19"/>
-                  </svg>
-                </button>
-              </div>
-
-              <!-- Planner Coming-Next State Notice -->
-              @if (showPlannerNotice()) {
-                <div class="planner-notice" role="alert">
-                  <div class="planner-notice-icon">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="12" cy="12" r="10"/>
-                      <line x1="12" y1="16" x2="12" y2="12"/>
-                      <line x1="12" y1="8" x2="12.01" y2="8"/>
-                    </svg>
-                  </div>
-                  <div class="planner-notice-body">
-                    <strong>{{ 'home.plannerNoticeTitle' | translate }}</strong>
-                    <p>
-                      {{ 'home.plannerNoticeDesc' | translate }}
-                    </p>
-                  </div>
-                  <button type="button" class="btn-notice-dismiss" (click)="dismissPlannerNotice()" title="Dismiss">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <line x1="18" y1="6" x2="6" y2="18"/>
-                      <line x1="6" y1="6" x2="18" y2="18"/>
-                    </svg>
-                  </button>
-                </div>
-              }
-            </div>
-          </section>
-
-          <!-- Learning Context Section (Using REAL persisted profile data) -->
-          @if (profile(); as p) {
-            <section class="context-section">
-              <div class="section-header-compact">
-                <h3 class="section-title">{{ 'home.learningContext' | translate }}</h3>
-                <span class="section-hint">{{ 'home.learningContextHint' | translate }}</span>
-              </div>
-
-              <div class="context-grid">
-                <div class="context-card">
-                  <span class="context-label">{{ 'home.targetRole' | translate }}</span>
-                  <p class="context-value">{{ p.targetRole }}</p>
-                </div>
-
-                <div class="context-card">
-                  <span class="context-label">{{ 'home.primaryGoal' | translate }}</span>
-                  <p class="context-value">{{ p.goal }}</p>
-                </div>
-
-                <div class="context-card">
-                  <span class="context-label">{{ 'home.sessionLength' | translate }}</span>
-                  <p class="context-value">{{ p.preferredSessionMinutes }} {{ langService.currentLanguage() === 'ar' ? 'دقيقة' : 'min' }}</p>
-                </div>
-
-                <div class="context-card context-card-full">
-                  <span class="context-label">{{ 'home.background' | translate }}</span>
-                  <p class="context-value context-bio">{{ p.background }}</p>
-                </div>
-              </div>
-            </section>
-          }
-        }
-
-        <!-- ── PRACTICE VIEW ───────────────────────────── -->
-        @case ('practice') {
-          <div class="view-empty-state">
-            <div class="empty-icon-wrap">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="16 18 22 12 16 6"/>
-                <polyline points="8 6 2 12 8 18"/>
-              </svg>
-            </div>
-            <h2 class="empty-title">{{ 'practice.emptyTitle' | translate }}</h2>
-            <p class="empty-description">
-              {{ 'practice.emptyDesc' | translate }}
-            </p>
-            <div class="empty-actions">
-              <button type="button" class="btn btn-secondary btn-sm" (click)="setSection('home')">
-                {{ 'empty.returnHome' | translate }}
-              </button>
-            </div>
-          </div>
-        }
-
-        <!-- ── SKILLS VIEW ─────────────────────────────── -->
-        @case ('skills') {
-          <div class="view-empty-state">
-            <div class="empty-icon-wrap">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-              </svg>
-            </div>
-            <h2 class="empty-title">{{ 'skills.emptyTitle' | translate }}</h2>
-            <p class="empty-description">
-              {{ 'skills.emptyDesc' | translate }}
-            </p>
-            <div class="empty-actions">
-              <button type="button" class="btn btn-secondary btn-sm" (click)="setSection('home')">
-                {{ 'empty.returnHome' | translate }}
-              </button>
-            </div>
-          </div>
-        }
-
-        <!-- ── HISTORY VIEW ────────────────────────────── -->
-        @case ('history') {
-          <div class="view-empty-state">
-            <div class="empty-icon-wrap">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="12 6 12 12 16 14"/>
-              </svg>
-            </div>
-            <h2 class="empty-title">{{ 'history.emptyTitle' | translate }}</h2>
-            <p class="empty-description">
-              {{ 'history.emptyDesc' | translate }}
-            </p>
-            <div class="empty-actions">
-              <button type="button" class="btn btn-secondary btn-sm" (click)="setSection('home')">
-                {{ 'empty.returnHome' | translate }}
-              </button>
-            </div>
-          </div>
-        }
-
-        <!-- ── PROFILE VIEW ────────────────────────────── -->
-        @case ('profile') {
-          <div class="profile-view-wrapper">
-            <div class="section-header-compact">
-              <h2 class="section-title">{{ 'profile.title' | translate }}</h2>
-              <span class="section-hint">{{ 'profile.subtitle' | translate }}</span>
-            </div>
-
-            <div class="profile-meta-grid">
-              <div class="context-card">
-                <span class="context-label">{{ 'profile.fullName' | translate }}</span>
-                <p class="context-value">{{ user()?.displayName }}</p>
-              </div>
-
-              <div class="context-card">
-                <span class="context-label">{{ 'profile.email' | translate }}</span>
-                <p class="context-value" dir="ltr">{{ user()?.email }}</p>
-              </div>
-
-              <div class="context-card">
-                <span class="context-label">{{ 'profile.verification' | translate }}</span>
-                <p class="context-value">
-                  @if (user()?.emailConfirmed) {
-                    <span class="badge badge-success">{{ 'profile.verifiedBadge' | translate }}</span>
-                  } @else {
-                    <span class="badge badge-neutral">{{ 'profile.unverifiedBadge' | translate }}</span>
-                  }
-                </p>
-              </div>
-
-              <div class="context-card">
-                <span class="context-label">{{ 'home.targetRole' | translate }}</span>
-                <p class="context-value">{{ profile()?.targetRole || 'Not configured' }}</p>
-              </div>
-
-              <div class="context-card">
-                <span class="context-label">{{ 'home.sessionLength' | translate }}</span>
-                <p class="context-value">{{ profile()?.preferredSessionMinutes || 20 }} {{ langService.currentLanguage() === 'ar' ? 'دقيقة' : 'min' }}</p>
-              </div>
-
-              <div class="context-card">
-                <span class="context-label">{{ 'home.primaryGoal' | translate }}</span>
-                <p class="context-value">{{ profile()?.goal || 'Not configured' }}</p>
-              </div>
-
-              <div class="context-card context-card-full">
-                <span class="context-label">{{ 'home.background' | translate }}</span>
-                <p class="context-value context-bio">{{ profile()?.background || 'No details provided' }}</p>
-              </div>
-            </div>
-          </div>
-        }
-      }
-    </main>
+    <!-- Error Alert -->
+    @if (errorMessage(); as err) {
+      <div class="alert alert-error" role="alert">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>{{ err | translate }}</span>
+        <button type="button" class="btn btn-sm btn-ghost" (click)="triggerFirstSession()">
+          {{ 'session.retry' | translate }}
+        </button>
+      </div>
+    }
   </div>
-</div>
+</section>
+
+<!-- Learning Context Section (Using REAL persisted profile data) -->
+@if (profile(); as p) {
+  <section class="context-section">
+    <div class="section-header-compact">
+      <h3 class="section-title">{{ 'home.learningContext' | translate }}</h3>
+      <span class="section-hint">{{ 'home.learningContextHint' | translate }}</span>
+    </div>
+
+    <div class="context-grid">
+      <div class="context-card">
+        <span class="context-label">{{ 'home.targetRole' | translate }}</span>
+        <p class="context-value">{{ p.targetRole }}</p>
+      </div>
+
+      <div class="context-card">
+        <span class="context-label">{{ 'home.primaryGoal' | translate }}</span>
+        <p class="context-value">{{ p.goal }}</p>
+      </div>
+
+      <div class="context-card">
+        <span class="context-label">{{ 'home.sessionLength' | translate }}</span>
+        <p class="context-value">{{ p.preferredSessionMinutes }} {{ langService.currentLanguage() === 'ar' ? 'دقيقة' : 'min' }}</p>
+      </div>
+
+      <div class="context-card context-card-full">
+        <span class="context-label">{{ 'home.background' | translate }}</span>
+        <p class="context-value context-bio">{{ p.background }}</p>
+      </div>
+    </div>
+  </section>
+}

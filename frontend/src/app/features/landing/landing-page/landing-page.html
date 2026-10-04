@@ -14,18 +14,45 @@
 
       <nav class="nav-links">
         <a href="#how-it-works" class="nav-link">{{ 'landing.workflowTitle' | translate }}</a>
-        <a href="#why-devassess" class="nav-link">Why {{ 'brand.name' | translate }}</a>
+        <a href="#features" class="nav-link">{{ 'landing.featuresTag' | translate }}</a>
+        <a href="#why-devassess" class="nav-link">{{ 'landing.whyTitle' | translate }}</a>
       </nav>
 
       <div class="nav-actions">
         <!-- Language Switcher in Landing Header -->
         <button
           type="button"
-          class="btn btn-ghost btn-sm"
+          class="btn btn-ghost btn-sm lang-toggle-btn"
           (click)="toggleLanguage()"
           [title]="'lang.label' | translate"
         >
           {{ langService.currentLanguage() === 'en' ? 'العربية' : 'English' }}
+        </button>
+
+        <!-- Theme Switcher in Landing Header -->
+        <button
+          type="button"
+          class="btn btn-ghost btn-sm theme-toggle-btn"
+          (click)="cycleTheme()"
+          [title]="'theme.label' | translate"
+        >
+          @if (themeService.effectiveTheme() === 'dark') {
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/>
+              <line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+          } @else {
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          }
         </button>
 
         <a routerLink="/login" class="btn btn-ghost btn-sm" id="nav-login">
@@ -69,12 +96,13 @@
 
       <div class="role-pills">
         <span class="role-pill-label">
-          {{ langService.currentLanguage() === 'ar' ? 'مُصمم من أجل:' : 'Tailored for:' }}
+          {{ 'landing.tailoredFor' | translate }}
         </span>
         <span class="role-pill">{{ 'landing.roleBackend' | translate }}</span>
         <span class="role-pill">{{ 'landing.roleFrontend' | translate }}</span>
         <span class="role-pill">{{ 'landing.roleFullstack' | translate }}</span>
         <span class="role-pill">{{ 'landing.roleDevops' | translate }}</span>
+        <span class="role-pill">{{ 'landing.roleCloud' | translate }}</span>
       </div>
     </div>
   </section>
@@ -82,9 +110,7 @@
   <!-- How It Works Section -->
   <section class="section how-it-works-section" id="how-it-works">
     <div class="section-header">
-      <div class="section-tag">
-        {{ langService.currentLanguage() === 'ar' ? 'منهجية العمل' : 'Workflow' }}
-      </div>
+      <div class="section-tag">{{ 'landing.workflowTag' | translate }}</div>
       <h2 class="section-title">{{ 'landing.workflowTitle' | translate }}</h2>
       <p class="section-desc">{{ 'landing.workflowSubtitle' | translate }}</p>
     </div>
@@ -123,6 +149,142 @@
         </div>
         <h3 class="step-title">{{ 'landing.step3Title' | translate }}</h3>
         <p class="step-text">{{ 'landing.step3Desc' | translate }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core Features / Capabilities Section -->
+  <section class="section features-section" id="features">
+    <div class="section-header">
+      <div class="section-tag">{{ 'landing.featuresTag' | translate }}</div>
+      <h2 class="section-title">{{ 'landing.featuresTitle' | translate }}</h2>
+      <p class="section-desc">{{ 'landing.featuresSubtitle' | translate }}</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-box">
+        <div class="feature-box-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+        <h3 class="feature-box-title">{{ 'landing.feat1Title' | translate }}</h3>
+        <p class="feature-box-desc">{{ 'landing.feat1Desc' | translate }}</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-box-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="6" y1="3" x2="6" y2="15"/>
+            <circle cx="18" cy="6" r="3"/>
+            <circle cx="6" cy="18" r="3"/>
+            <path d="M18 9a9 9 0 0 1-9 9"/>
+          </svg>
+        </div>
+        <h3 class="feature-box-title">{{ 'landing.feat2Title' | translate }}</h3>
+        <p class="feature-box-desc">{{ 'landing.feat2Desc' | translate }}</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-box-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+        </div>
+        <h3 class="feature-box-title">{{ 'landing.feat3Title' | translate }}</h3>
+        <p class="feature-box-desc">{{ 'landing.feat3Desc' | translate }}</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-box-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+        </div>
+        <h3 class="feature-box-title">{{ 'landing.feat4Title' | translate }}</h3>
+        <p class="feature-box-desc">{{ 'landing.feat4Desc' | translate }}</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-box-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+        </div>
+        <h3 class="feature-box-title">{{ 'landing.feat5Title' | translate }}</h3>
+        <p class="feature-box-desc">{{ 'landing.feat5Desc' | translate }}</p>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-box-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 11 12 14 22 4"/>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+        </div>
+        <h3 class="feature-box-title">{{ 'landing.feat6Title' | translate }}</h3>
+        <p class="feature-box-desc">{{ 'landing.feat6Desc' | translate }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why DevAssess Comparison Section -->
+  <section class="section why-section" id="why-devassess">
+    <div class="section-header">
+      <div class="section-tag">{{ 'landing.whyTag' | translate }}</div>
+      <h2 class="section-title">{{ 'landing.whyTitle' | translate }}</h2>
+      <p class="section-desc">{{ 'landing.whySubtitle' | translate }}</p>
+    </div>
+
+    <div class="comparison-card">
+      <div class="comparison-col comparison-old">
+        <h3 class="col-title">{{ 'landing.tradTitle' | translate }}</h3>
+        <ul class="col-list">
+          <li>
+            <span class="icon-cross">&#10005;</span>
+            {{ 'landing.tradItem1' | translate }}
+          </li>
+          <li>
+            <span class="icon-cross">&#10005;</span>
+            {{ 'landing.tradItem2' | translate }}
+          </li>
+          <li>
+            <span class="icon-cross">&#10005;</span>
+            {{ 'landing.tradItem3' | translate }}
+          </li>
+          <li>
+            <span class="icon-cross">&#10005;</span>
+            {{ 'landing.tradItem4' | translate }}
+          </li>
+        </ul>
+      </div>
+
+      <div class="comparison-col comparison-devassess">
+        <div class="highlight-badge">DevAssess Approach</div>
+        <h3 class="col-title">{{ 'landing.devassessTitle' | translate }}</h3>
+        <ul class="col-list">
+          <li>
+            <span class="icon-check">&#10003;</span>
+            {{ 'landing.devassessItem1' | translate }}
+          </li>
+          <li>
+            <span class="icon-check">&#10003;</span>
+            {{ 'landing.devassessItem2' | translate }}
+          </li>
+          <li>
+            <span class="icon-check">&#10003;</span>
+            {{ 'landing.devassessItem3' | translate }}
+          </li>
+          <li>
+            <span class="icon-check">&#10003;</span>
+            {{ 'landing.devassessItem4' | translate }}
+          </li>
+        </ul>
       </div>
     </div>
   </section>

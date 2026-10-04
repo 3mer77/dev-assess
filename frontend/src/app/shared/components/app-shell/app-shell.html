@@ -1,0 +1,202 @@
+<div class="linear-layout">
+  <!-- Left Sidebar (Linear Style) -->
+  <aside class="linear-sidebar">
+    <!-- Workspace Header -->
+    <div class="workspace-header">
+      <div class="workspace-avatar">DA</div>
+      <div class="workspace-info">
+        <span class="workspace-name">{{ 'brand.name' | translate }}</span>
+        <span class="workspace-tier">{{ 'brand.tagline' | translate }}</span>
+      </div>
+    </div>
+
+    <!-- Navigation Menu with Real Router Links -->
+    <nav class="sidebar-nav">
+      <div class="nav-group-title">{{ 'nav.workspace' | translate }}</div>
+      <ul class="nav-list">
+        <li>
+          <a
+            routerLink="/dashboard"
+            routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="nav-item"
+          >
+            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span class="nav-text">{{ 'nav.home' | translate }}</span>
+          </a>
+        </li>
+        <li>
+          <a
+            routerLink="/practice"
+            routerLinkActive="is-active"
+            class="nav-item"
+          >
+            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"/>
+              <polyline points="8 6 2 12 8 18"/>
+            </svg>
+            <span class="nav-text">{{ 'nav.practice' | translate }}</span>
+          </a>
+        </li>
+        <li>
+          <a
+            routerLink="/skills"
+            routerLinkActive="is-active"
+            class="nav-item"
+          >
+            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+            <span class="nav-text">{{ 'nav.skills' | translate }}</span>
+          </a>
+        </li>
+        <li>
+          <a
+            routerLink="/history"
+            routerLinkActive="is-active"
+            class="nav-item"
+          >
+            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span class="nav-text">{{ 'nav.history' | translate }}</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- Separated Lower Section: Profile -->
+      <div class="nav-group-title nav-separator-title">{{ 'nav.account' | translate }}</div>
+      <ul class="nav-list">
+        <li>
+          <a
+            routerLink="/profile"
+            routerLinkActive="is-active"
+            class="nav-item"
+          >
+            <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <span class="nav-text">{{ 'nav.profile' | translate }}</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- User Profile Footer in Sidebar -->
+    <div class="sidebar-user-footer">
+      @if (user(); as u) {
+        <a routerLink="/profile" class="user-pill-info" title="View profile">
+          <div class="user-avatar-circle">{{ u.displayName.charAt(0).toUpperCase() }}</div>
+          <div class="user-text-meta">
+            <span class="user-name">{{ u.displayName }}</span>
+            <span class="user-email-sub" dir="ltr">{{ u.email }}</span>
+          </div>
+        </a>
+      }
+      <button type="button" class="btn-sidebar-logout" (click)="signOut()" [title]="'nav.signOut' | translate">
+        <svg class="flip-rtl" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main View Area with Persistent Topbar and RouterOutlet -->
+  <div class="linear-main">
+    <!-- Top Action Bar -->
+    <header class="linear-topbar">
+      <div class="topbar-left">
+        <span class="breadcrumb-item">{{ 'brand.name' | translate }}</span>
+        <span class="breadcrumb-separator">/</span>
+        <span class="breadcrumb-item is-current">{{ currentSectionKey() | translate }}</span>
+      </div>
+
+      <!-- Restrained Controls in Top-Right Toolbar (Language & Theme) -->
+      <div class="topbar-actions">
+        <!-- Subtle Language Selector -->
+        <div class="lang-control-group" role="group" aria-label="Language selector">
+          <button
+            type="button"
+            class="lang-pill-btn"
+            [class.is-active]="langService.currentLanguage() === 'en'"
+            (click)="setLanguage('en')"
+            title="English"
+          >
+            EN
+          </button>
+          <button
+            type="button"
+            class="lang-pill-btn"
+            [class.is-active]="langService.currentLanguage() === 'ar'"
+            (click)="setLanguage('ar')"
+            title="العربية"
+          >
+            عربي
+          </button>
+        </div>
+
+        <!-- Restrained Theme Selector -->
+        <div class="theme-control-group" role="group" aria-label="Theme selector">
+          <button
+            type="button"
+            class="theme-pill-btn"
+            [class.is-active]="themeService.preference() === 'system'"
+            (click)="setTheme('system')"
+            title="System theme"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+            <span>{{ 'theme.auto' | translate }}</span>
+          </button>
+          <button
+            type="button"
+            class="theme-pill-btn"
+            [class.is-active]="themeService.preference() === 'light'"
+            (click)="setTheme('light')"
+            title="Light theme"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/>
+              <line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+            <span>{{ 'theme.light' | translate }}</span>
+          </button>
+          <button
+            type="button"
+            class="theme-pill-btn"
+            [class.is-active]="themeService.preference() === 'dark'"
+            (click)="setTheme('dark')"
+            title="Dark theme"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+            <span>{{ 'theme.dark' | translate }}</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Routed Page Content rendered here -->
+    <main class="linear-content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

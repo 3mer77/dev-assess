@@ -21,6 +21,9 @@ namespace DevAssess.Api.Models
         // User's Learning Profile
         public UserLearningProfile? LearningProfile { get; set; }
 
+        public ICollection<LearningSession> LearningSessions { get; set; }
+    = new List<LearningSession>();
+
 
     }
 }

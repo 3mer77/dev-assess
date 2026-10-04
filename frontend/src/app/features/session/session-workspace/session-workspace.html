@@ -1,0 +1,327 @@
+<div class="session-workspace-container">
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="session-loading-state">
+      <div class="spinner-large"></div>
+      <p class="loading-text">{{ 'session.loading' | translate }}</p>
+    </div>
+  }
+
+  <!-- Error / Not Found State -->
+  @else if (errorMessage(); as err) {
+    <div class="session-error-card">
+      <div class="error-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <h2 class="error-title">{{ err | translate }}</h2>
+      <p class="error-desc">{{ 'session.notFound' | translate }}</p>
+      <a routerLink="/dashboard" class="btn btn-secondary">
+        {{ 'session.returnDashboard' | translate }}
+      </a>
+    </div>
+  }
+
+  <!-- Active Session Workspace -->
+  @else if (session(); as s) {
+    <!-- Workspace Top Header -->
+    <header class="workspace-header">
+      <div class="workspace-header-left">
+        <a routerLink="/dashboard" class="back-link" [title]="'session.returnDashboard' | translate">
+          <svg class="flip-rtl" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"/>
+            <polyline points="12 19 5 12 12 5"/>
+          </svg>
+          <span>{{ 'session.returnDashboard' | translate }}</span>
+        </a>
+        <span class="header-sep">/</span>
+        <h1 class="session-main-title">{{ s.title }}</h1>
+      </div>
+
+      <div class="workspace-header-right">
+        <!-- Status Badges -->
+        @if (s.status === 'Generated') {
+          <span class="badge badge-warning">{{ 'session.statusGenerated' | translate }}</span>
+        } @else if (s.status === 'InProgress') {
+          <span class="badge badge-accent">
+            <span class="badge-dot-live"></span>
+            {{ 'session.statusInProgress' | translate }}
+          </span>
+        } @else if (s.status === 'Submitted') {
+          <span class="badge badge-success">{{ 'session.statusSubmitted' | translate }}</span>
+        } @else if (s.status === 'Evaluating') {
+          <span class="badge badge-accent">{{ 'session.statusEvaluating' | translate }}</span>
+        } @else if (s.status === 'Completed') {
+          <span class="badge badge-success">{{ 'session.statusCompleted' | translate }}</span>
+        }
+
+        <span class="session-id-pill" dir="ltr" title="Session UUID">
+          {{ s.id.substring(0, 8) }}...
+        </span>
+      </div>
+    </header>
+
+    <!-- Post-Submission Banner -->
+    @if (isReadOnly()) {
+      <div class="submitted-confirmation-banner">
+        <div class="submitted-banner-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <div class="submitted-banner-body">
+          <strong class="submitted-banner-title">{{ 'session.submittedTitle' | translate }}</strong>
+          <p class="submitted-banner-copy">{{ 'session.submittedDesc' | translate }}</p>
+        </div>
+      </div>
+    }
+
+    <!-- Session Goal Summary Bar -->
+    <div class="session-summary-bar">
+      <div class="goal-block">
+        <span class="summary-label">{{ 'session.sessionGoal' | translate }}</span>
+        <p class="goal-text">{{ s.goal }}</p>
+      </div>
+      <div class="summary-meta">
+        <div class="meta-chip progress-chip">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>{{ 'session.progressText' | translate:{ answered: answeredCount(), total: totalChallenges() } }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Challenges Workspace Split -->
+    <div class="challenges-layout">
+      <!-- Left Column: Challenges Navigation -->
+      <aside class="challenges-sidebar">
+        <div class="challenges-sidebar-header">
+          <span class="sidebar-heading">{{ 'session.challengesTitle' | translate }}</span>
+          <span class="challenges-count-badge">
+            {{ answeredCount() }}/{{ totalChallenges() }}
+          </span>
+        </div>
+
+        <div class="challenges-nav-list">
+          @for (c of s.challenges; track c.id; let idx = $index) {
+            <button
+              type="button"
+              class="challenge-nav-item"
+              [class.is-active]="activeChallengeIndex() === idx"
+              (click)="selectChallenge(idx)"
+            >
+              <div class="challenge-nav-top">
+                <div class="challenge-nav-status">
+                  @if (isChallengeAnswered(c.id)) {
+                    <span class="status-marker marker-answered" title="Answered">✓</span>
+                  } @else if (activeChallengeIndex() === idx) {
+                    <span class="status-marker marker-current" title="Current">●</span>
+                  } @else {
+                    <span class="status-marker marker-unanswered" title="Unanswered">○</span>
+                  }
+                  <span class="challenge-nav-num">{{ 'session.challengeNum' | translate:{ num: c.order } }}</span>
+                </div>
+                <span
+                  class="challenge-diff-pill"
+                  [class.diff-easy]="c.difficulty.toLowerCase() === 'easy'"
+                  [class.diff-medium]="c.difficulty.toLowerCase() === 'medium'"
+                  [class.diff-hard]="c.difficulty.toLowerCase() === 'hard'"
+                >
+                  {{ c.difficulty }}
+                </span>
+              </div>
+              <span class="challenge-nav-title">{{ c.title }}</span>
+            </button>
+          }
+        </div>
+      </aside>
+
+      <!-- Right Column: Active Challenge Detail View -->
+      <main class="challenge-detail-pane">
+        @if (activeChallenge(); as current) {
+          <div class="challenge-detail-card">
+            <!-- Header of active challenge -->
+            <div class="challenge-card-header">
+              <div class="challenge-title-group">
+                <div class="challenge-meta-row">
+                  <span class="challenge-index-tag">
+                    {{ 'session.challengeOf' | translate:{ current: current.order, total: totalChallenges() } }}
+                  </span>
+                  <span class="challenge-type-badge">{{ current.type }}</span>
+                  <span
+                    class="challenge-diff-badge"
+                    [class.diff-easy]="current.difficulty.toLowerCase() === 'easy'"
+                    [class.diff-medium]="current.difficulty.toLowerCase() === 'medium'"
+                    [class.diff-hard]="current.difficulty.toLowerCase() === 'hard'"
+                  >
+                    {{ current.difficulty }}
+                  </span>
+                </div>
+                <h2 class="challenge-card-title">{{ current.title }}</h2>
+              </div>
+            </div>
+
+            <!-- Challenge Prompt Content -->
+            <div class="challenge-prompt-section">
+              <span class="section-subheading">{{ 'session.prompt' | translate }}</span>
+              <div class="prompt-text-container" dir="auto">{{ current.prompt }}</div>
+            </div>
+
+            <!-- Real Technical Answer Workspace -->
+            <div class="challenge-answer-section">
+              <div class="answer-header-row">
+                <span class="section-subheading">{{ 'session.yourAnswer' | translate }}</span>
+
+                <!-- Subtle Real-time Save Status UX -->
+                <div class="save-status-indicator">
+                  @if (isReadOnly()) {
+                    <span class="save-state-text read-only-state">
+                      {{ 'session.readOnlyNotice' | translate }}
+                    </span>
+                  } @else if (currentSaveStatus() === 'saving') {
+                    <span class="save-state-text saving-state">
+                      <span class="spinner-micro"></span>
+                      {{ 'session.saving' | translate }}
+                    </span>
+                  } @else if (currentSaveStatus() === 'saved') {
+                    <span class="save-state-text saved-state">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                      {{ 'session.saved' | translate }}
+                    </span>
+                  } @else if (currentSaveStatus() === 'error') {
+                    <span class="save-state-text error-state">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/>
+                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                      </svg>
+                      {{ 'session.saveFailed' | translate }}
+                      <button type="button" class="btn-retry-save" (click)="retrySave()">
+                        {{ 'session.retrySave' | translate }}
+                      </button>
+                    </span>
+                  }
+                </div>
+              </div>
+
+              <textarea
+                class="technical-answer-textarea"
+                [ngModel]="currentAnswer()"
+                (ngModelChange)="onAnswerInput($event)"
+                [disabled]="isReadOnly()"
+                [placeholder]="'session.answerPlaceholder' | translate"
+                rows="8"
+                dir="auto"
+              ></textarea>
+            </div>
+
+            <!-- Incomplete Submission Warning -->
+            @if (submitWarning(); as warn) {
+              <div class="alert alert-warning" role="alert">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                  <line x1="12" y1="9" x2="12" y2="13"/>
+                  <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                <span>{{ 'session.incompleteAlert' | translate:{ unanswered: warn } }}</span>
+              </div>
+            }
+
+            <!-- Navigation and Submission Bar -->
+            <div class="challenge-navigation-actions">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                (click)="prevChallenge()"
+                [disabled]="isFirstChallenge()"
+              >
+                <svg class="flip-rtl" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12"/>
+                  <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                <span>{{ 'session.prev' | translate }}</span>
+              </button>
+
+              <div class="nav-actions-right">
+                @if (!isLastChallenge()) {
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    (click)="nextChallenge()"
+                  >
+                    <span>{{ 'session.next' | translate }}</span>
+                    <svg class="flip-rtl" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="5" y1="12" x2="19" y2="12"/>
+                      <polyline points="12 5 19 12 12 19"/>
+                    </svg>
+                  </button>
+                } @else if (!isReadOnly()) {
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-submit-assessment"
+                    (click)="openSubmitModal()"
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                      <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                    <span>{{ 'session.submitBtn' | translate }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+        }
+      </main>
+    </div>
+  }
+</div>
+
+<!-- Submission Confirmation Modal -->
+@if (showSubmitModal()) {
+  <div class="modal-backdrop" (click)="closeSubmitModal()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+      <div class="modal-icon-badge">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+
+      <h3 class="modal-title">{{ 'session.modalTitle' | translate }}</h3>
+      <p class="modal-body-text">
+        {{ 'session.modalCopy' | translate:{ total: totalChallenges() } }}
+      </p>
+
+      <div class="modal-footer-actions">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="closeSubmitModal()"
+          [disabled]="isSubmitting()"
+        >
+          {{ 'session.modalCancel' | translate }}
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="confirmSubmit()"
+          [disabled]="isSubmitting()"
+        >
+          @if (isSubmitting()) {
+            <span class="spinner-small"></span>
+            <span>{{ 'session.submitting' | translate }}</span>
+          } @else {
+            <span>{{ 'session.modalConfirm' | translate }}</span>
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+}

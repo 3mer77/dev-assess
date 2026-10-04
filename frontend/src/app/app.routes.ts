@@ -6,6 +6,7 @@ import { publicAuthGuard } from './core/guards/public-auth.guard';
 export const routes: Routes = [
   {
     path: '',
+    pathMatch: 'full',
     loadComponent: () =>
       import('./features/landing/landing-page/landing-page').then(
         (m) => m.LandingPage
@@ -15,9 +16,7 @@ export const routes: Routes = [
     path: 'register',
     canActivate: [publicAuthGuard],
     loadComponent: () =>
-      import('./features/auth/register/register').then(
-        (m) => m.Register
-      ),
+      import('./features/auth/register/register').then((m) => m.Register),
   },
   {
     path: 'verify-email',
@@ -30,25 +29,65 @@ export const routes: Routes = [
     path: 'login',
     canActivate: [publicAuthGuard],
     loadComponent: () =>
-      import('./features/auth/login/login').then(
-        (m) => m.Login
-      ),
+      import('./features/auth/login/login').then((m) => m.Login),
   },
   {
     path: 'onboarding',
     canActivate: [onboardingGuard],
     loadComponent: () =>
-      import('./features/onboarding/onboarding').then(
-        (m) => m.Onboarding
-      ),
+      import('./features/onboarding/onboarding').then((m) => m.Onboarding),
   },
   {
-    path: 'dashboard',
+    path: '',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./features/dashboard/dashboard-home/dashboard-home').then(
-        (m) => m.DashboardHome
+      import('./shared/components/app-shell/app-shell').then(
+        (m) => m.AppShell
       ),
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./features/dashboard/dashboard-home/dashboard-home').then(
+            (m) => m.DashboardHome
+          ),
+      },
+      {
+        path: 'practice',
+        loadComponent: () =>
+          import('./features/practice/practice-page/practice-page').then(
+            (m) => m.PracticePage
+          ),
+      },
+      {
+        path: 'skills',
+        loadComponent: () =>
+          import('./features/skills/skills-page/skills-page').then(
+            (m) => m.SkillsPage
+          ),
+      },
+      {
+        path: 'history',
+        loadComponent: () =>
+          import('./features/history/history-page/history-page').then(
+            (m) => m.HistoryPage
+          ),
+      },
+      {
+        path: 'profile',
+        loadComponent: () =>
+          import('./features/profile/profile-page/profile-page').then(
+            (m) => m.ProfilePage
+          ),
+      },
+      {
+        path: 'session/:id',
+        loadComponent: () =>
+          import('./features/session/session-workspace/session-workspace').then(
+            (m) => m.SessionWorkspace
+          ),
+      },
+    ],
   },
   {
     path: '**',
