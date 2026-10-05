@@ -22,4 +22,9 @@ public class LearningSession
 
     public ICollection<Challenge> Challenges { get; set; }
         = new List<Challenge>();
+
+    public Evaluation? Evaluation { get; set; }
+
+    public ICollection<UserSkillEvidence> SkillEvidence { get; set; }
+        = new List<UserSkillEvidence>();
 }

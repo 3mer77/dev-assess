@@ -1,3 +1,37 @@
+export type SessionStatus =
+  | 'Generated'
+  | 'InProgress'
+  | 'Submitted'
+  | 'Evaluating'
+  | 'Completed';
+
+export type EvaluationSignal =
+  | 'positive'
+  | 'negative'
+  | 'mixed'
+  | 'insufficient';
+
+export interface SkillObservation {
+  skill: string;
+  signal: EvaluationSignal;
+  confidence: number;
+  evidence: string;
+}
+
+export interface ChallengeReview {
+  challengeId: string;
+  summary: string;
+  strengths: string[];
+  gaps: string[];
+  observations: SkillObservation[];
+}
+
+export interface AnswerEvaluation {
+  summary: string;
+  nextFocus: string;
+  challengeReviews: ChallengeReview[];
+}
+
 export interface ChallengeResponse {
   id: string;
   type: string;
@@ -13,7 +47,7 @@ export interface LearningSessionResponse {
   id: string;
   title: string;
   goal: string;
-  status: 'Generated' | 'InProgress' | 'Submitted' | 'Evaluating' | 'Completed' | string;
+  status: SessionStatus;
   createdAt: string;
   startedAt?: string | null;
   completedAt?: string | null;
@@ -29,3 +63,4 @@ export interface ChallengeAnswerResponse {
 export interface SaveChallengeAnswerRequest {
   answer: string;
 }
+

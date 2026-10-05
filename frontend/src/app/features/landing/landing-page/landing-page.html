@@ -1,65 +1,43 @@
-<div class="landing-container">
+<div class="landing-page-wrapper">
   <!-- Top Navigation Header -->
-  <header class="landing-header">
-    <div class="header-inner">
-      <a routerLink="/" class="brand-logo">
-        <span class="logo-mark">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="16 18 22 12 16 6"/>
-            <polyline points="8 6 2 12 8 18"/>
-          </svg>
+  <header class="landing-nav-header">
+    <div class="landing-nav-inner">
+      <!-- Brand Logo -->
+      <a routerLink="/" class="brand-logo-wrap" title="DevAssess">
+        <div class="brand-icon-box">&#x2318;</div>
+        <span class="brand-text-name">
+          DevAssess<span class="brand-dot"></span>
         </span>
-        <span class="brand-name">{{ 'brand.name' | translate }}</span>
       </a>
 
-      <nav class="nav-links">
-        <a href="#how-it-works" class="nav-link">{{ 'landing.workflowTitle' | translate }}</a>
-        <a href="#features" class="nav-link">{{ 'landing.featuresTag' | translate }}</a>
-        <a href="#why-devassess" class="nav-link">{{ 'landing.whyTitle' | translate }}</a>
+      <!-- Desktop Nav Links -->
+      <nav class="landing-nav-links">
+        <a routerLink="/" class="landing-nav-link">{{ 'nav.home' | translate }}</a>
+        <a href="#how-it-works" class="landing-nav-link">{{ 'nav.howItWorks' | translate }}</a>
+        <a href="#tracks" class="landing-nav-link">{{ 'nav.tracks' | translate }}</a>
       </nav>
 
-      <div class="nav-actions">
-        <!-- Language Switcher in Landing Header -->
+      <!-- Nav Actions -->
+      <div class="landing-nav-actions">
+        <!-- Language Switcher -->
         <button
           type="button"
-          class="btn btn-ghost btn-sm lang-toggle-btn"
+          class="lang-switch-btn"
           (click)="toggleLanguage()"
           [title]="'lang.label' | translate"
         >
-          {{ langService.currentLanguage() === 'en' ? 'العربية' : 'English' }}
+          <span class="lang-globe-icon">🌐</span>
+          <span>{{ langService.currentLanguage() === 'en' ? 'عربي' : 'EN' }}</span>
         </button>
 
-        <!-- Theme Switcher in Landing Header -->
-        <button
-          type="button"
-          class="btn btn-ghost btn-sm theme-toggle-btn"
-          (click)="cycleTheme()"
-          [title]="'theme.label' | translate"
-        >
-          @if (themeService.effectiveTheme() === 'dark') {
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="1" x2="12" y2="3"/>
-              <line x1="12" y1="21" x2="12" y2="23"/>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-              <line x1="1" y1="12" x2="3" y2="12"/>
-              <line x1="21" y1="12" x2="23" y2="12"/>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-            </svg>
-          } @else {
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-            </svg>
-          }
-        </button>
-
-        <a routerLink="/login" class="btn btn-ghost btn-sm" id="nav-login">
-          {{ 'landing.signIn' | translate }}
+        <!-- Log in -->
+        <a routerLink="/login" class="landing-nav-link login-link">
+          {{ 'nav.login' | translate }}
         </a>
-        <a routerLink="/register" class="btn btn-primary btn-sm" id="nav-register">
-          {{ 'landing.startAssessment' | translate }}
+
+        <!-- Primary Get Started CTA -->
+        <a routerLink="/register" class="btn btn-primary btn-sm nav-cta-btn">
+          {{ 'nav.getStarted' | translate }}
         </a>
       </div>
     </div>
@@ -67,254 +45,201 @@
 
   <!-- Hero Section -->
   <section class="hero-section">
-    <div class="hero-content">
-      <div class="hero-badge">
-        <span class="badge-dot"></span>
-        {{ 'landing.tag' | translate }}
+    <div class="hero-container">
+      <div class="hero-grid">
+        <!-- Text Column -->
+        <div class="hero-copy-col">
+          <div class="eyebrow-pill">
+            <span class="eyebrow-dot"></span>
+            <span>{{ 'landing.eyebrow' | translate }}</span>
+          </div>
+
+          <h1 class="hero-main-title">
+            <span>{{ 'landing.heroTitlePre' | translate }}</span>
+            <span class="hero-title-break">{{ 'landing.heroTitleMid' | translate }}</span>
+            <span class="headline-highlight">{{ 'landing.heroTitleHighlight' | translate }}</span>
+          </h1>
+
+          <p class="hero-description">
+            {{ 'landing.heroSubtitle' | translate }}
+          </p>
+
+          <div class="hero-cta-row">
+            <a routerLink="/register" class="btn btn-primary btn-lg hero-btn-start">
+              {{ 'landing.startPracticing' | translate }}
+            </a>
+            <a routerLink="/register" class="btn btn-outline btn-lg hero-btn-demo">
+              {{ 'landing.exploreDemo' | translate }}
+            </a>
+          </div>
+
+          <!-- Proof Badges -->
+          <div class="hero-proof-line">
+            <span class="proof-item">✓ {{ 'landing.proofLevel' | translate }}</span>
+            <span class="proof-item">✓ {{ 'landing.proofLang' | translate }}</span>
+            <span class="proof-item">✓ {{ 'landing.proofPressure' | translate }}</span>
+          </div>
+        </div>
+
+        <!-- Preview Column (Carefully Crafted HTML/CSS Tilted Card) -->
+        <div class="hero-preview-col">
+          <!-- Decorative Braces -->
+          <div class="decorative-braces-bg" aria-hidden="true">&#123; &#125;</div>
+
+          <!-- Main Tilted Card -->
+          <div class="interview-preview-card">
+            <!-- Card Header -->
+            <div class="preview-header-row">
+              <div class="preview-session-label">
+                <span class="preview-icon-dot">✻</span>
+                <span>{{ 'landing.previewLabel' | translate }}</span>
+              </div>
+              <span class="preview-category-pill">{{ 'landing.previewCategory' | translate }}</span>
+            </div>
+
+            <!-- Metadata -->
+            <div class="preview-metadata-row" dir="ltr">
+              <span class="meta-question-count">{{ 'landing.previewMeta' | translate }}</span>
+            </div>
+
+            <!-- Question -->
+            <h3 class="preview-question-title">
+              {{ 'landing.previewQuestion' | translate }}
+            </h3>
+
+            <!-- Dark Code Panel -->
+            <div class="preview-code-panel" dir="ltr">
+              <pre><code><span class="code-comment">// A small change. A big difference.</span>
+<span class="code-kw">const</span> users = <span class="code-kw">await</span> db.users
+  .find(&#123; active: <span class="code-kw">true</span> &#125;)
+  .select('name email')
+  .limit(<span class="code-kw">20</span>);</code></pre>
+            </div>
+
+            <!-- Card Footer & Waveform -->
+            <div class="preview-card-footer">
+              <span class="preview-helper-text">{{ 'landing.previewHelper' | translate }}</span>
+              <div class="waveform-container" aria-hidden="true">
+                <span class="wave-bar bar-1"></span>
+                <span class="wave-bar bar-2"></span>
+                <span class="wave-bar bar-3"></span>
+                <span class="wave-bar bar-1"></span>
+                <span class="wave-bar bar-2"></span>
+                <span class="wave-bar bar-3"></span>
+                <span class="wave-bar bar-1"></span>
+                <span class="wave-bar bar-2"></span>
+                <span class="wave-bar bar-3"></span>
+                <span class="wave-bar bar-1"></span>
+                <span class="wave-bar bar-2"></span>
+                <span class="wave-bar bar-3"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating Note Card (Rotated 2deg) -->
+          <div class="floating-hero-note">
+            <div class="floating-note-circle">
+              <span class="floating-check-icon">✓</span>
+            </div>
+            <div class="floating-note-text">
+              <strong class="floating-note-title">{{ 'landing.floatingNoteTitle' | translate }}</strong>
+              <span class="floating-note-sub">{{ 'landing.floatingNoteSub' | translate }}</span>
+            </div>
+          </div>
+        </div>
       </div>
+    </div>
+  </section>
 
-      <h1 class="hero-title">
-        {{ 'landing.heroTitle' | translate }}
-      </h1>
-
-      <p class="hero-lead">
-        {{ 'landing.heroSubtitle' | translate }}
-      </p>
-
-      <div class="hero-cta-group">
-        <a routerLink="/register" class="btn btn-primary btn-lg" id="hero-get-started">
-          {{ 'landing.startAssessment' | translate }}
-          <svg class="flip-rtl" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12"/>
-            <polyline points="12 5 19 12 12 19"/>
-          </svg>
-        </a>
-        <a routerLink="/login" class="btn btn-secondary btn-lg" id="hero-sign-in">
-          {{ 'landing.signIn' | translate }}
-        </a>
-      </div>
-
-      <div class="role-pills">
-        <span class="role-pill-label">
-          {{ 'landing.tailoredFor' | translate }}
-        </span>
-        <span class="role-pill">{{ 'landing.roleBackend' | translate }}</span>
-        <span class="role-pill">{{ 'landing.roleFrontend' | translate }}</span>
-        <span class="role-pill">{{ 'landing.roleFullstack' | translate }}</span>
-        <span class="role-pill">{{ 'landing.roleDevops' | translate }}</span>
-        <span class="role-pill">{{ 'landing.roleCloud' | translate }}</span>
+  <!-- Technology Strip -->
+  <section class="tech-strip-section" id="tracks">
+    <div class="tech-strip-inner">
+      <span class="tech-strip-label">{{ 'landing.techStripLabel' | translate }}</span>
+      <div class="tech-names-row" dir="ltr">
+        <span class="tech-item">React</span>
+        <span class="tech-item">Next.js</span>
+        <span class="tech-item">Node.js</span>
+        <span class="tech-item">.NET</span>
+        <span class="tech-item">Angular</span>
+        <span class="tech-item">Python</span>
+        <span class="tech-item">SQL</span>
       </div>
     </div>
   </section>
 
   <!-- How It Works Section -->
-  <section class="section how-it-works-section" id="how-it-works">
-    <div class="section-header">
-      <div class="section-tag">{{ 'landing.workflowTag' | translate }}</div>
-      <h2 class="section-title">{{ 'landing.workflowTitle' | translate }}</h2>
-      <p class="section-desc">{{ 'landing.workflowSubtitle' | translate }}</p>
-    </div>
-
-    <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-number">01</div>
-        <div class="step-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-            <circle cx="12" cy="7" r="4"/>
-          </svg>
+  <section class="how-it-works-section" id="how-it-works">
+    <div class="how-container">
+      <div class="how-header-row">
+        <div class="how-header-left">
+          <span class="section-eyebrow-text">{{ 'landing.howEyebrow' | translate }}</span>
+          <h2 class="how-main-heading">{{ 'landing.howHeading' | translate }}</h2>
         </div>
-        <h3 class="step-title">{{ 'landing.step1Title' | translate }}</h3>
-        <p class="step-text">{{ 'landing.step1Desc' | translate }}</p>
+        <p class="how-supporting-para">{{ 'landing.howSubtitle' | translate }}</p>
       </div>
 
-      <div class="step-card">
-        <div class="step-number">02</div>
-        <div class="step-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="16 18 22 12 16 6"/>
-            <polyline points="8 6 2 12 8 18"/>
-          </svg>
+      <div class="how-steps-grid">
+        <!-- Step 1 -->
+        <div class="how-step-col">
+          <div class="step-top-line">
+            <span class="step-num">{{ 'landing.step1Num' | translate }}</span>
+          </div>
+          <h3 class="step-title">{{ 'landing.step1Title' | translate }}</h3>
+          <p class="step-desc">{{ 'landing.step1Desc' | translate }}</p>
         </div>
-        <h3 class="step-title">{{ 'landing.step2Title' | translate }}</h3>
-        <p class="step-text">{{ 'landing.step2Desc' | translate }}</p>
-      </div>
 
-      <div class="step-card">
-        <div class="step-number">03</div>
-        <div class="step-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          </svg>
+        <!-- Step 2 -->
+        <div class="how-step-col">
+          <div class="step-top-line">
+            <span class="step-num">{{ 'landing.step2Num' | translate }}</span>
+          </div>
+          <h3 class="step-title">{{ 'landing.step2Title' | translate }}</h3>
+          <p class="step-desc">{{ 'landing.step2Desc' | translate }}</p>
         </div>
-        <h3 class="step-title">{{ 'landing.step3Title' | translate }}</h3>
-        <p class="step-text">{{ 'landing.step3Desc' | translate }}</p>
+
+        <!-- Step 3 -->
+        <div class="how-step-col">
+          <div class="step-top-line">
+            <span class="step-num">{{ 'landing.step3Num' | translate }}</span>
+          </div>
+          <h3 class="step-title">{{ 'landing.step3Title' | translate }}</h3>
+          <p class="step-desc">{{ 'landing.step3Desc' | translate }}</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- Core Features / Capabilities Section -->
-  <section class="section features-section" id="features">
-    <div class="section-header">
-      <div class="section-tag">{{ 'landing.featuresTag' | translate }}</div>
-      <h2 class="section-title">{{ 'landing.featuresTitle' | translate }}</h2>
-      <p class="section-desc">{{ 'landing.featuresSubtitle' | translate }}</p>
-    </div>
-
-    <div class="features-grid">
-      <div class="feature-box">
-        <div class="feature-box-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-          </svg>
+  <!-- Bottom CTA Banner Section -->
+  <section class="bottom-cta-section">
+    <div class="cta-banner-container">
+      <div class="cta-banner-card">
+        <div class="cta-banner-content">
+          <h2 class="cta-banner-headline">{{ 'landing.ctaHeadline' | translate }}</h2>
+          <p class="cta-banner-sub">{{ 'landing.ctaSubtitle' | translate }}</p>
         </div>
-        <h3 class="feature-box-title">{{ 'landing.feat1Title' | translate }}</h3>
-        <p class="feature-box-desc">{{ 'landing.feat1Desc' | translate }}</p>
-      </div>
-
-      <div class="feature-box">
-        <div class="feature-box-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="6" y1="3" x2="6" y2="15"/>
-            <circle cx="18" cy="6" r="3"/>
-            <circle cx="6" cy="18" r="3"/>
-            <path d="M18 9a9 9 0 0 1-9 9"/>
-          </svg>
+        <div class="cta-banner-action">
+          <a routerLink="/register" class="btn btn-accent btn-lg cta-lime-btn">
+            {{ 'landing.ctaBtn' | translate }}
+          </a>
         </div>
-        <h3 class="feature-box-title">{{ 'landing.feat2Title' | translate }}</h3>
-        <p class="feature-box-desc">{{ 'landing.feat2Desc' | translate }}</p>
-      </div>
-
-      <div class="feature-box">
-        <div class="feature-box-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-            <line x1="8" y1="21" x2="16" y2="21"/>
-            <line x1="12" y1="17" x2="12" y2="21"/>
-          </svg>
-        </div>
-        <h3 class="feature-box-title">{{ 'landing.feat3Title' | translate }}</h3>
-        <p class="feature-box-desc">{{ 'landing.feat3Desc' | translate }}</p>
-      </div>
-
-      <div class="feature-box">
-        <div class="feature-box-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="20" x2="18" y2="10"/>
-            <line x1="12" y1="20" x2="12" y2="4"/>
-            <line x1="6" y1="20" x2="6" y2="14"/>
-          </svg>
-        </div>
-        <h3 class="feature-box-title">{{ 'landing.feat4Title' | translate }}</h3>
-        <p class="feature-box-desc">{{ 'landing.feat4Desc' | translate }}</p>
-      </div>
-
-      <div class="feature-box">
-        <div class="feature-box-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <polyline points="12 6 12 12 16 14"/>
-          </svg>
-        </div>
-        <h3 class="feature-box-title">{{ 'landing.feat5Title' | translate }}</h3>
-        <p class="feature-box-desc">{{ 'landing.feat5Desc' | translate }}</p>
-      </div>
-
-      <div class="feature-box">
-        <div class="feature-box-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 11 12 14 22 4"/>
-            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
-          </svg>
-        </div>
-        <h3 class="feature-box-title">{{ 'landing.feat6Title' | translate }}</h3>
-        <p class="feature-box-desc">{{ 'landing.feat6Desc' | translate }}</p>
       </div>
     </div>
   </section>
 
-  <!-- Why DevAssess Comparison Section -->
-  <section class="section why-section" id="why-devassess">
-    <div class="section-header">
-      <div class="section-tag">{{ 'landing.whyTag' | translate }}</div>
-      <h2 class="section-title">{{ 'landing.whyTitle' | translate }}</h2>
-      <p class="section-desc">{{ 'landing.whySubtitle' | translate }}</p>
-    </div>
-
-    <div class="comparison-card">
-      <div class="comparison-col comparison-old">
-        <h3 class="col-title">{{ 'landing.tradTitle' | translate }}</h3>
-        <ul class="col-list">
-          <li>
-            <span class="icon-cross">&#10005;</span>
-            {{ 'landing.tradItem1' | translate }}
-          </li>
-          <li>
-            <span class="icon-cross">&#10005;</span>
-            {{ 'landing.tradItem2' | translate }}
-          </li>
-          <li>
-            <span class="icon-cross">&#10005;</span>
-            {{ 'landing.tradItem3' | translate }}
-          </li>
-          <li>
-            <span class="icon-cross">&#10005;</span>
-            {{ 'landing.tradItem4' | translate }}
-          </li>
-        </ul>
-      </div>
-
-      <div class="comparison-col comparison-devassess">
-        <div class="highlight-badge">DevAssess Approach</div>
-        <h3 class="col-title">{{ 'landing.devassessTitle' | translate }}</h3>
-        <ul class="col-list">
-          <li>
-            <span class="icon-check">&#10003;</span>
-            {{ 'landing.devassessItem1' | translate }}
-          </li>
-          <li>
-            <span class="icon-check">&#10003;</span>
-            {{ 'landing.devassessItem2' | translate }}
-          </li>
-          <li>
-            <span class="icon-check">&#10003;</span>
-            {{ 'landing.devassessItem3' | translate }}
-          </li>
-          <li>
-            <span class="icon-check">&#10003;</span>
-            {{ 'landing.devassessItem4' | translate }}
-          </li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- Final CTA Section -->
-  <section class="cta-banner-section">
-    <div class="cta-banner-inner">
-      <h2 class="cta-title">{{ 'landing.ctaTitle' | translate }}</h2>
-      <p class="cta-subtitle">{{ 'landing.ctaSubtitle' | translate }}</p>
-      <div class="cta-actions">
-        <a routerLink="/register" class="btn btn-primary btn-lg" id="footer-get-started">
-          {{ 'landing.ctaButton' | translate }}
-        </a>
-        <a routerLink="/login" class="btn btn-secondary btn-lg" id="footer-sign-in">
-          {{ 'landing.signIn' | translate }}
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Minimal Footer -->
+  <!-- Footer -->
   <footer class="landing-footer">
-    <div class="footer-inner">
-      <div class="footer-brand">
-        <span class="footer-logo">◆ {{ 'brand.name' | translate }}</span>
-        <span class="footer-copy">&copy; 2026 {{ 'landing.footerRights' | translate }}</span>
+    <div class="landing-footer-inner">
+      <div class="footer-brand-side">
+        <a routerLink="/" class="brand-logo-wrap">
+          <div class="brand-icon-box">&#x2318;</div>
+          <span class="brand-text-name">
+            DevAssess<span class="brand-dot"></span>
+          </span>
+        </a>
+        <span class="footer-motto-text">{{ 'landing.footerMotto' | translate }}</span>
       </div>
-      <div class="footer-links">
-        <a routerLink="/login" class="footer-link">{{ 'landing.signIn' | translate }}</a>
-        <a routerLink="/register" class="footer-link">{{ 'auth.createAccountLink' | translate }}</a>
+      <div class="footer-copy-side">
+        <span>{{ 'landing.footerRights' | translate }}</span>
       </div>
     </div>
   </footer>

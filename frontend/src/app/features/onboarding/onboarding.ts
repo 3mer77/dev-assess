@@ -1,20 +1,26 @@
-import { Component, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { ProfileService } from '../../core/profile/profile.service';
 import { ProfileStore } from '../../core/profile/profile.store';
 import { AuthStore } from '../../core/auth/auth.store';
 import { AuthService } from '../../core/auth/auth.service';
-import { AuthLayout, StepItem } from '../../shared/components/auth-layout/auth-layout';
 import { LanguageService } from '../../core/i18n/language.service';
 import { TranslatePipe } from '../../core/i18n/translate.pipe';
+
+export interface RolePreset {
+  id: string;
+  icon: string;
+  titleKey: string;
+  descKey: string;
+}
 
 @Component({
   selector: 'app-onboarding',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, AuthLayout, TranslatePipe],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslatePipe],
   templateUrl: './onboarding.html',
   styleUrl: './onboarding.css',
 })
@@ -30,16 +36,35 @@ export class Onboarding implements OnInit {
   readonly currentStep = signal<1 | 2 | 3>(1);
   readonly loading = signal(false);
   readonly errorMessage = signal('');
+  readonly showCustomRole = signal(false);
 
   readonly currentUser = this.authStore.user;
 
-  readonly roles = [
-    { id: 'Backend Engineer', title: 'Backend Engineer', desc: 'APIs, microservices, databases, system design' },
-    { id: 'Frontend Engineer', title: 'Frontend Engineer', desc: 'UI architecture, performance, reactive state' },
-    { id: 'Full-Stack Engineer', title: 'Full-Stack Engineer', desc: 'End-to-end applications, distributed web apps' },
-    { id: 'DevOps / Cloud', title: 'DevOps / Cloud', desc: 'CI/CD, container orchestration, cloud infra' },
-    { id: 'Mobile Engineer', title: 'Mobile Engineer', desc: 'Cross-platform & native mobile engineering' },
-    { id: 'Other', title: 'Other Specialization', desc: 'Specify your custom technical discipline' },
+  readonly roles: RolePreset[] = [
+    {
+      id: 'Backend development',
+      icon: '{ }',
+      titleKey: 'onboarding.pathBackend',
+      descKey: 'onboarding.pathBackendDesc',
+    },
+    {
+      id: 'Frontend development',
+      icon: '⌘',
+      titleKey: 'onboarding.pathFrontend',
+      descKey: 'onboarding.pathFrontendDesc',
+    },
+    {
+      id: 'Full-stack development',
+      icon: '</>',
+      titleKey: 'onboarding.pathFullstack',
+      descKey: 'onboarding.pathFullstackDesc',
+    },
+    {
+      id: 'AI engineering',
+      icon: '❋',
+      titleKey: 'onboarding.pathAi',
+      descKey: 'onboarding.pathAiDesc',
+    },
   ];
 
   readonly techSuggestions = [
@@ -48,56 +73,58 @@ export class Onboarding implements OnInit {
     'React',
     'Angular',
     'C# / .NET',
-    'SQL & RDBMS',
-    'Docker',
     'Python',
+    'SQL & RDBMS',
     'PostgreSQL',
+    'Docker',
     'AWS',
     'Redis',
     'Kubernetes',
+    'Next.js',
+    'GraphQL',
   ];
 
-  // Exactly matches backend: 10, 20, 40
+  readonly experienceLevels = [
+    {
+      id: 'Junior',
+      titleKey: 'onboarding.levelJunior',
+      descKey: 'onboarding.levelJuniorDesc',
+    },
+    {
+      id: 'Mid-Level',
+      titleKey: 'onboarding.levelMid',
+      descKey: 'onboarding.levelMidDesc',
+    },
+    {
+      id: 'Senior',
+      titleKey: 'onboarding.levelSenior',
+      descKey: 'onboarding.levelSeniorDesc',
+    },
+  ];
+
+  // Exactly matches backend: 10, 20, 40 minutes
   readonly sessionOptions = [
-    { minutes: 10, label: '10 min', desc: 'Quick daily drill' },
-    { minutes: 20, label: '20 min', desc: 'Balanced focus session (Recommended)' },
-    { minutes: 40, label: '40 min', desc: 'Deep architecture challenge' },
+    { minutes: 10, labelKey: 'onboarding.min10', descKey: '10 min' },
+    { minutes: 20, labelKey: 'onboarding.min20', descKey: '20 min (Recommended)' },
+    { minutes: 40, labelKey: 'onboarding.min40', descKey: '40 min' },
   ];
 
   readonly form = this.fb.nonNullable.group({
-    selectedRole: ['Backend Engineer', [Validators.required]],
+    selectedRole: ['Full-stack development', [Validators.required]],
     customRole: [''],
     background: [
-      '',
-      [Validators.required, Validators.minLength(5), Validators.maxLength(2000)],
+      'Next.js, Node.js, .NET',
+      [Validators.required, Validators.minLength(3), Validators.maxLength(2000)],
     ],
+    experienceLevel: ['Mid-Level', [Validators.required]],
     goal: [
-      '',
-      [Validators.required, Validators.minLength(5), Validators.maxLength(500)],
+      'Sharpen full-stack system architecture and interview reasoning',
+      [Validators.required, Validators.minLength(3), Validators.maxLength(500)],
     ],
     preferredSessionMinutes: [20, [Validators.required]],
   });
 
-  get steps(): StepItem[] {
-    const s = this.currentStep();
-    return [
-      {
-        label: this.langService.t('onboarding.step1Label'),
-        status: s > 1 ? 'completed' : s === 1 ? 'active' : 'upcoming',
-      },
-      {
-        label: this.langService.t('onboarding.step2Label'),
-        status: s > 2 ? 'completed' : s === 2 ? 'active' : 'upcoming',
-      },
-      {
-        label: this.langService.t('onboarding.step3Label'),
-        status: s === 3 ? 'active' : 'upcoming',
-      },
-    ];
-  }
-
   ngOnInit(): void {
-    // If onboarding is already finished, go to dashboard
     if (this.profileStore.hasCompletedOnboarding()) {
       this.router.navigate(['/dashboard']);
     }
@@ -105,6 +132,23 @@ export class Onboarding implements OnInit {
 
   selectRole(roleId: string): void {
     this.form.patchValue({ selectedRole: roleId });
+    this.showCustomRole.set(false);
+
+    // Provide helpful defaults for background based on role
+    if (roleId === 'Backend development') {
+      this.form.patchValue({ background: 'Node.js, C# / .NET, PostgreSQL, Docker' });
+    } else if (roleId === 'Frontend development') {
+      this.form.patchValue({ background: 'React, Angular, TypeScript, Next.js' });
+    } else if (roleId === 'Full-stack development') {
+      this.form.patchValue({ background: 'Next.js, Node.js, .NET, PostgreSQL' });
+    } else if (roleId === 'AI engineering') {
+      this.form.patchValue({ background: 'Python, LLMs, Machine Learning, PyTorch' });
+    }
+  }
+
+  toggleCustomRole(): void {
+    this.showCustomRole.set(true);
+    this.form.patchValue({ selectedRole: 'Other' });
   }
 
   addTechChip(tech: string): void {
@@ -115,8 +159,16 @@ export class Onboarding implements OnInit {
     }
   }
 
+  selectLevel(levelId: string): void {
+    this.form.patchValue({ experienceLevel: levelId });
+  }
+
   selectSessionMinutes(minutes: number): void {
     this.form.patchValue({ preferredSessionMinutes: minutes });
+  }
+
+  setLanguage(lang: 'en' | 'ar'): void {
+    this.langService.setLanguage(lang);
   }
 
   goToNextStep(): void {
@@ -127,7 +179,11 @@ export class Onboarding implements OnInit {
         this.form.value.selectedRole === 'Other' &&
         !this.form.value.customRole?.trim()
       ) {
-        this.errorMessage.set('Please specify your custom engineering role.');
+        this.errorMessage.set(
+          this.langService.currentLanguage() === 'ar'
+            ? 'يرجى كتابة المسمى أو المسار المخصص.'
+            : 'Please specify your custom engineering role.'
+        );
         return;
       }
       this.currentStep.set(2);
@@ -136,7 +192,11 @@ export class Onboarding implements OnInit {
 
     if (this.currentStep() === 2) {
       if (!this.form.value.background?.trim()) {
-        this.errorMessage.set('Please describe your background or select technologies.');
+        this.errorMessage.set(
+          this.langService.currentLanguage() === 'ar'
+            ? 'يرجى تحديد أو كتابة التقنيات التي تعمل بها.'
+            : 'Please describe your background or select technologies.'
+        );
         return;
       }
       this.currentStep.set(3);
@@ -156,15 +216,21 @@ export class Onboarding implements OnInit {
     this.errorMessage.set('');
 
     if (this.form.invalid) {
-      this.errorMessage.set('Please fill out all required fields.');
+      this.errorMessage.set(
+        this.langService.currentLanguage() === 'ar'
+          ? 'يرجى ملء جميع الحقول المطلوبة.'
+          : 'Please fill out all required fields.'
+      );
       return;
     }
 
-    const { selectedRole, customRole, background, goal, preferredSessionMinutes } =
+    const { selectedRole, customRole, background, goal, experienceLevel, preferredSessionMinutes } =
       this.form.getRawValue();
 
     const targetRole =
       selectedRole === 'Other' ? customRole.trim() : selectedRole;
+
+    const fullGoal = `${experienceLevel} — ${goal.trim()}`;
 
     this.loading.set(true);
 
@@ -172,7 +238,7 @@ export class Onboarding implements OnInit {
       .completeOnboarding({
         targetRole,
         background: background.trim(),
-        goal: goal.trim(),
+        goal: fullGoal,
         preferredSessionMinutes,
       })
       .subscribe((result) => {
@@ -201,3 +267,4 @@ export class Onboarding implements OnInit {
       .subscribe();
   }
 }
+

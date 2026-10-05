@@ -1,5 +1,543 @@
-.step-view {
-  animation: fadeIn 0.2s ease-in-out;
+/* ═══════════════════════════════════════════════
+   DevAssess — Onboarding Flow Styles (Redesign)
+   ═══════════════════════════════════════════════ */
+
+.onboarding-page {
+  min-height: 100vh;
+  background-color: var(--color-bg, #F8F9F5);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.onboarding-header {
+  height: 72px;
+  border-bottom: 1px solid var(--color-border, #E1E5DA);
+  background-color: var(--color-bg, #F8F9F5);
+  display: flex;
+  align-items: center;
+}
+
+.header-inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--color-primary, #193F35);
+}
+
+.brand-text {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.brand-dot {
+  color: var(--color-primary, #193F35);
+}
+
+.brand-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--color-primary, #193F35);
+  color: var(--color-accent-lime, #D9F583);
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.lang-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text, #173D34);
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 6px;
+  transition: background-color 0.15s;
+}
+
+.lang-toggle-btn:hover {
+  background-color: var(--color-surface-hover, #EDF3E3);
+}
+
+.btn-ghost-sm {
+  background: none;
+  border: 1px solid var(--color-border, #E1E5DA);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-secondary, #78847D);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-ghost-sm:hover {
+  border-color: var(--color-primary, #193F35);
+  color: var(--color-primary, #193F35);
+}
+
+.nav-link {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary, #193F35);
+  text-decoration: none;
+}
+
+/* Main Onboarding Container */
+.onboarding-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 48px 24px 80px;
+}
+
+.onboarding-card {
+  width: 100%;
+  max-width: 740px;
+}
+
+/* Stepper Bar */
+.stepper-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.stepper-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  color: var(--color-text-headline-highlight, #74875B);
+  text-transform: uppercase;
+}
+
+.stepper-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary, #78847D);
+}
+
+.segmented-progress-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 36px;
+}
+
+.progress-segment {
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background-color: var(--color-border, #E1E5DA);
+  transition: background-color 0.25s ease;
+}
+
+.progress-segment.is-active {
+  background-color: var(--color-primary, #193F35);
+}
+
+/* Step Typography */
+.step-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-primary, #193F35);
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.step-subtitle {
+  font-size: 15px;
+  color: var(--color-text-body, #78847D);
+  margin-bottom: 32px;
+  line-height: 1.5;
+}
+
+/* Roles 2x2 Grid */
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.role-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 18px;
+  background: var(--color-surface, #FFFFFF);
+  border: 1.5px solid var(--color-border, #E1E5DA);
+  border-radius: 14px;
+  text-align: start;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+[dir="rtl"] .role-card {
+  text-align: right;
+}
+
+.role-card:hover {
+  border-color: #B5C4B4;
+  background-color: #FAFCF7;
+}
+
+.role-card.is-selected {
+  border-color: var(--color-primary, #193F35);
+  background-color: #F4F7EE;
+}
+
+.role-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-primary, #193F35);
+  background: var(--color-surface-secondary, #EDF1E7);
+  flex-shrink: 0;
+}
+
+.role-text-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.role-title {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-primary, #193F35);
+  margin-bottom: 2px;
+}
+
+.role-desc {
+  display: block;
+  font-size: 12px;
+  color: var(--color-text-secondary, #78847D);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.selection-check {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary, #193F35);
+}
+
+[dir="rtl"] .selection-check {
+  right: auto;
+  left: 14px;
+}
+
+/* Custom Role */
+.custom-role-wrapper {
+  margin-bottom: 28px;
+}
+
+.btn-link-custom {
+  background: none;
+  border: none;
+  color: var(--color-text-headline-highlight, #74875B);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.btn-link-custom:hover {
+  color: var(--color-primary, #193F35);
+}
+
+.custom-role-input-box {
+  margin-top: 12px;
+}
+
+/* Form Controls */
+.form-group {
+  margin-bottom: 24px;
+}
+
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary, #173D34);
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border, #E1E5DA);
+  border-radius: 8px;
+  background: var(--color-surface, #FFFFFF);
+  color: var(--color-text-primary, #173D34);
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.form-input:focus {
+  border-color: var(--color-primary, #193F35);
+  box-shadow: 0 0 0 3px rgba(25, 63, 53, 0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+/* Chips Cloud */
+.chips-section {
+  margin-top: 16px;
+  margin-bottom: 32px;
+}
+
+.chips-label {
+  display: block;
+  font-size: 12px;
+  color: var(--color-text-secondary, #78847D);
+  margin-bottom: 10px;
+}
+
+.chips-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tech-chip {
+  background: var(--color-surface, #FFFFFF);
+  border: 1px solid var(--color-border, #E1E5DA);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary, #173D34);
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.tech-chip:hover {
+  background: var(--color-surface-hover, #EDF3E3);
+  border-color: #B5C4B4;
+}
+
+/* Step 3: Section Blocks */
+.section-block {
+  margin-bottom: 28px;
+}
+
+.levels-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.level-card {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 14px;
+  background: var(--color-surface, #FFFFFF);
+  border: 1.5px solid var(--color-border, #E1E5DA);
+  border-radius: 12px;
+  text-align: start;
+  cursor: pointer;
+  position: relative;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+[dir="rtl"] .level-card {
+  text-align: right;
+}
+
+.level-card:hover {
+  border-color: #B5C4B4;
+}
+
+.level-card.is-selected {
+  border-color: var(--color-primary, #193F35);
+  background-color: #F4F7EE;
+}
+
+.level-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary, #193F35);
+  margin-bottom: 4px;
+}
+
+.level-desc {
+  font-size: 11px;
+  color: var(--color-text-secondary, #78847D);
+  line-height: 1.4;
+}
+
+.durations-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.duration-card {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 14px;
+  background: var(--color-surface, #FFFFFF);
+  border: 1.5px solid var(--color-border, #E1E5DA);
+  border-radius: 12px;
+  text-align: start;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+[dir="rtl"] .duration-card {
+  text-align: right;
+}
+
+.duration-card:hover {
+  border-color: #B5C4B4;
+}
+
+.duration-card.is-selected {
+  border-color: var(--color-primary, #193F35);
+  background-color: #F4F7EE;
+}
+
+.duration-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--color-primary, #193F35);
+  margin-bottom: 2px;
+}
+
+.duration-desc {
+  font-size: 11px;
+  color: var(--color-text-secondary, #78847D);
+}
+
+/* Step Action Buttons */
+.step-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 36px;
+  padding-top: 20px;
+}
+
+.step-actions.dual-actions {
+  justify-content: space-between;
+}
+
+.btn-text-back {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary, #78847D);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 0;
+  font-family: inherit;
+  transition: color 0.15s;
+}
+
+.btn-text-back:hover {
+  color: var(--color-primary, #193F35);
+}
+
+.btn-primary {
+  background: var(--color-primary, #193F35);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 28px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background-color 0.15s, transform 0.1s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-primary-hover, #2E584B);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinner-sm {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #FFFFFF;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-inline-end: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.alert-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background-color: #FDF2F0;
+  border: 1px solid #F5C6CB;
+  border-radius: 8px;
+  color: var(--color-error, #AD4238);
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+
+.animate-fade {
+  animation: fadeIn 0.2s ease-out;
 }
 
 @keyframes fadeIn {
@@ -7,180 +545,11 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-.form-header {
-  margin-bottom: 24px;
+@media (max-width: 640px) {
+  .roles-grid,
+  .levels-grid,
+  .durations-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-.step-badge {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 8px;
-}
-
-.form-title {
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--color-text-primary);
-  margin-bottom: 6px;
-}
-
-.form-desc {
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--color-text-secondary);
-}
-
-/* ── Role Cards Grid ─────────────────────────── */
-.roles-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.role-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 14px 16px;
-  background-color: var(--color-surface);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  box-shadow: var(--shadow-xs);
-}
-
-.role-card:hover {
-  border-color: #cbd5e1;
-  background-color: var(--color-surface-hover);
-}
-
-.role-card.is-selected {
-  border-color: var(--color-primary);
-  background-color: #f8faff;
-  box-shadow: 0 0 0 1px var(--color-primary);
-}
-
-.role-radio-dot {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 2px solid #cbd5e1;
-  margin-top: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.15s ease;
-}
-
-.role-card.is-selected .role-radio-dot {
-  border-color: var(--color-primary);
-  background-color: var(--color-primary);
-  box-shadow: inset 0 0 0 3px #ffffff;
-}
-
-.role-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  margin-bottom: 2px;
-}
-
-.role-desc {
-  font-size: 13px;
-  color: var(--color-text-secondary);
-}
-
-.custom-role-input {
-  margin-top: 16px;
-}
-
-/* ── Tech Chips ──────────────────────────────── */
-.chips-cloud {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
-}
-
-.tech-chip {
-  padding: 6px 12px;
-  border-radius: var(--radius-full);
-  font-size: 12px;
-  font-weight: 500;
-  background-color: var(--color-surface-subtle);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.tech-chip:hover {
-  border-color: var(--color-primary);
-  color: var(--color-primary);
-  background-color: var(--color-primary-light);
-}
-
-/* ── Session Cards ───────────────────────────── */
-.session-cards-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.session-card {
-  padding: 16px 12px;
-  background-color: var(--color-surface);
-  border: 1.5px solid var(--color-border);
-  border-radius: var(--radius-md);
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  box-shadow: var(--shadow-xs);
-}
-
-.session-card:hover {
-  border-color: #cbd5e1;
-}
-
-.session-card.is-selected {
-  border-color: var(--color-primary);
-  background-color: #f8faff;
-  box-shadow: 0 0 0 1px var(--color-primary);
-}
-
-.session-time {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  margin-bottom: 4px;
-}
-
-.session-desc {
-  font-size: 11px;
-  color: var(--color-text-secondary);
-  line-height: 1.3;
-}
-
-/* ── Step Actions ────────────────────────────── */
-.step-actions {
-  margin-top: 32px;
-}
-
-.dual-actions {
-  display: flex;
-  gap: 12px;
-}
-
-.dual-actions .btn {
-  flex: 1;
-}

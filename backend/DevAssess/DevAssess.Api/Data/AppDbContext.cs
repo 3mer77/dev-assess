@@ -21,6 +21,10 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
 
     public DbSet<ChallengeAnswer> ChallengeAnswers { get; set; }
 
+    public DbSet<Evaluation> Evaluations { get; set; }
+
+    public DbSet<UserSkillEvidence> UserSkillEvidence { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -103,5 +107,38 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             .HasForeignKey<ChallengeAnswer>(
                 answer => answer.ChallengeId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // -------------------------
+        // Session Evaluation
+        // -------------------------
+
+        builder.Entity<Evaluation>()
+            .HasOne(evaluation => evaluation.LearningSession)
+            .WithOne(session => session.Evaluation)
+            .HasForeignKey<Evaluation>(
+                evaluation => evaluation.LearningSessionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<Evaluation>()
+            .HasIndex(evaluation => evaluation.LearningSessionId)
+            .IsUnique();
+
+
+        // -------------------------
+        // Skill Evidence
+        // -------------------------
+
+        builder.Entity<UserSkillEvidence>()
+            .HasOne(evidence => evidence.LearningSession)
+            .WithMany(session => session.SkillEvidence)
+            .HasForeignKey(evidence => evidence.LearningSessionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<UserSkillEvidence>()
+            .HasIndex(evidence => new
+            {
+                evidence.UserId,
+                evidence.SkillKey
+            });
     }
 }

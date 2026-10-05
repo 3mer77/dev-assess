@@ -12,11 +12,14 @@ namespace DevAssess.Api.Controllers;
 public class SessionsController : ControllerBase
 {
     private readonly ISessionService _sessionService;
+    private readonly IEvaluationService _evaluationService;
 
     public SessionsController(
-        ISessionService sessionService)
+        ISessionService sessionService,
+        IEvaluationService evaluationService)
     {
         _sessionService = sessionService;
+        _evaluationService = evaluationService;
     }
 
     [HttpPost]
@@ -201,6 +204,45 @@ public class SessionsController : ControllerBase
             return BadRequest(new
             {
                 message = ex.Message
+            });
+        }
+    }
+
+    [HttpPost("{id:guid}/evaluate")]
+    public async Task<IActionResult> EvaluateSession(Guid id,CancellationToken cancellationToken)
+    {
+        var userId =
+            User.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? User.FindFirstValue("sub");
+
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return Unauthorized();
+        }
+
+        try
+        {
+            var evaluation =
+                await _evaluationService.EvaluateSessionAsync(
+                    userId,
+                    id,
+                    cancellationToken);
+
+            if (evaluation is null)
+            {
+                return NotFound(new
+                {
+                    message = "Session not found."
+                });
+            }
+
+            return Ok(evaluation);
+        }
+        catch (InvalidOperationException exception)
+        {
+            return BadRequest(new
+            {
+                message = exception.Message
             });
         }
     }

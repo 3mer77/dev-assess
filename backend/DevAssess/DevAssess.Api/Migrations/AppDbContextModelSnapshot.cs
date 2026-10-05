@@ -100,6 +100,147 @@ namespace DevAssess.Api.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("DevAssess.Api.Models.Challenge", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Difficulty")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExpectedEvidenceJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("LearningSessionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Prompt")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LearningSessionId", "Order")
+                        .IsUnique();
+
+                    b.ToTable("Challenges");
+                });
+
+            modelBuilder.Entity("DevAssess.Api.Models.ChallengeAnswer", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AnswerText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ChallengeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChallengeId")
+                        .IsUnique();
+
+                    b.ToTable("ChallengeAnswers");
+                });
+
+            modelBuilder.Entity("DevAssess.Api.Models.Evaluation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ChallengeFeedbackJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("LearningSessionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("NextFocus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReviewerModel")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LearningSessionId")
+                        .IsUnique();
+
+                    b.ToTable("Evaluations");
+                });
+
+            modelBuilder.Entity("DevAssess.Api.Models.LearningSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Goal")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("StartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("LearningSessions");
+                });
+
             modelBuilder.Entity("DevAssess.Api.Models.RefreshToken", b =>
                 {
                     b.Property<int>("Id")
@@ -182,6 +323,46 @@ namespace DevAssess.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("UserLearningProfiles");
+                });
+
+            modelBuilder.Entity("DevAssess.Api.Models.UserSkillEvidence", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<double>("Confidence")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Evidence")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("LearningSessionId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Signal")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SkillKey")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LearningSessionId");
+
+                    b.HasIndex("UserId", "SkillKey");
+
+                    b.ToTable("UserSkillEvidence");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -317,6 +498,50 @@ namespace DevAssess.Api.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("DevAssess.Api.Models.Challenge", b =>
+                {
+                    b.HasOne("DevAssess.Api.Models.LearningSession", "LearningSession")
+                        .WithMany("Challenges")
+                        .HasForeignKey("LearningSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LearningSession");
+                });
+
+            modelBuilder.Entity("DevAssess.Api.Models.ChallengeAnswer", b =>
+                {
+                    b.HasOne("DevAssess.Api.Models.Challenge", "Challenge")
+                        .WithOne("Answer")
+                        .HasForeignKey("DevAssess.Api.Models.ChallengeAnswer", "ChallengeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Challenge");
+                });
+
+            modelBuilder.Entity("DevAssess.Api.Models.Evaluation", b =>
+                {
+                    b.HasOne("DevAssess.Api.Models.LearningSession", "LearningSession")
+                        .WithOne("Evaluation")
+                        .HasForeignKey("DevAssess.Api.Models.Evaluation", "LearningSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LearningSession");
+                });
+
+            modelBuilder.Entity("DevAssess.Api.Models.LearningSession", b =>
+                {
+                    b.HasOne("DevAssess.Api.Models.ApplicationUser", "User")
+                        .WithMany("LearningSessions")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("DevAssess.Api.Models.RefreshToken", b =>
                 {
                     b.HasOne("DevAssess.Api.Models.RefreshToken", "ReplacedByToken")
@@ -344,6 +569,17 @@ namespace DevAssess.Api.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DevAssess.Api.Models.UserSkillEvidence", b =>
+                {
+                    b.HasOne("DevAssess.Api.Models.LearningSession", "LearningSession")
+                        .WithMany("SkillEvidence")
+                        .HasForeignKey("LearningSessionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("LearningSession");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -401,7 +637,23 @@ namespace DevAssess.Api.Migrations
                 {
                     b.Navigation("LearningProfile");
 
+                    b.Navigation("LearningSessions");
+
                     b.Navigation("RefreshTokens");
+                });
+
+            modelBuilder.Entity("DevAssess.Api.Models.Challenge", b =>
+                {
+                    b.Navigation("Answer");
+                });
+
+            modelBuilder.Entity("DevAssess.Api.Models.LearningSession", b =>
+                {
+                    b.Navigation("Challenges");
+
+                    b.Navigation("Evaluation");
+
+                    b.Navigation("SkillEvidence");
                 });
 #pragma warning restore 612, 618
         }

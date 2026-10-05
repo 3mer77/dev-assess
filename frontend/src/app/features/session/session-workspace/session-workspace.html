@@ -1,5 +1,5 @@
 <div class="session-workspace-container">
-  <!-- Loading State -->
+  <!-- 1. Initial Page Loading State -->
   @if (isLoading()) {
     <div class="session-loading-state">
       <div class="spinner-large"></div>
@@ -7,7 +7,7 @@
     </div>
   }
 
-  <!-- Error / Not Found State -->
+  <!-- 2. Session Error / Not Found State -->
   @else if (errorMessage(); as err) {
     <div class="session-error-card">
       <div class="error-icon">
@@ -25,7 +25,292 @@
     </div>
   }
 
-  <!-- Active Session Workspace -->
+  <!-- 3. Active Real AI Evaluation Running State -->
+  @else if (isEvaluating()) {
+    <div class="evaluating-state-card animate-fade">
+      <div class="evaluating-pulse-circle">
+        <span class="evaluating-icon">&#x2318;</span>
+      </div>
+      <h2 class="evaluating-title">{{ 'evaluation.evaluatingTitle' | translate }}</h2>
+      <p class="evaluating-desc">{{ 'evaluation.evaluatingDesc' | translate }}</p>
+      <div class="evaluating-bar-track">
+        <div class="evaluating-bar-fill"></div>
+      </div>
+    </div>
+  }
+
+  <!-- 4. Evaluation Failure / Retry State -->
+  @else if (evaluationError(); as evalErr) {
+    <div class="session-error-card animate-fade">
+      <div class="error-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+      </div>
+      <h2 class="error-title">{{ 'evaluation.evaluationFailed' | translate }}</h2>
+      <p class="error-desc">{{ evalErr | translate }}</p>
+      <div class="error-actions-row">
+        <button type="button" class="btn btn-primary" (click)="retryEvaluation()">
+          {{ 'evaluation.retryEvaluation' | translate }}
+        </button>
+        <a routerLink="/dashboard" class="btn btn-secondary">
+          {{ 'evaluation.backToDashboard' | translate }}
+        </a>
+      </div>
+    </div>
+  }
+
+  <!-- 5. COMPLETED / RESULTS & EVALUATION VIEW -->
+  @else if (isCompleted(); as comp) {
+    @if (session(); as s) {
+      @if (evaluation(); as ev) {
+        <div class="results-view animate-fade">
+          <!-- Results Top Header -->
+          <header class="workspace-header">
+            <div class="workspace-header-left">
+              <a routerLink="/dashboard" class="back-link" [title]="'evaluation.backToDashboard' | translate">
+                <svg class="flip-rtl" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12"/>
+                  <polyline points="12 19 5 12 12 5"/>
+                </svg>
+                <span>{{ 'evaluation.backToDashboard' | translate }}</span>
+              </a>
+              <span class="header-sep">/</span>
+              <h1 class="session-main-title">{{ s.title }}</h1>
+            </div>
+
+            <div class="workspace-header-right">
+              <span class="badge badge-success">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+                {{ 'session.statusCompleted' | translate }}
+              </span>
+
+              @if (s.completedAt) {
+                <span class="completed-date-pill">
+                  {{ 'evaluation.completedAt' | translate }} {{ s.completedAt | date:'mediumDate' }}
+                </span>
+              }
+
+              <button type="button" class="btn-topbar-action" (click)="startNewSession()">
+                {{ 'evaluation.newSession' | translate }}
+              </button>
+            </div>
+          </header>
+
+          <!-- Top 2-Column Summary Cards -->
+          <section class="results-summary-grid">
+            <!-- Overall Summary Card -->
+            <div class="result-summary-card">
+              <div class="card-title-row">
+                <span class="summary-card-icon">&#x2318;</span>
+                <h3 class="summary-card-heading">{{ 'evaluation.overallSummary' | translate }}</h3>
+              </div>
+              <p class="summary-card-body" dir="auto">{{ ev.summary }}</p>
+            </div>
+
+            <!-- Recommended Next Focus Card -->
+            <div class="result-summary-card card-highlight">
+              <div class="card-title-row">
+                <span class="summary-card-icon">↗</span>
+                <h3 class="summary-card-heading">{{ 'evaluation.nextFocus' | translate }}</h3>
+              </div>
+              <p class="summary-card-body" dir="auto">{{ ev.nextFocus }}</p>
+            </div>
+          </section>
+
+          <!-- Skill Evidence Section -->
+          <section class="evidence-section-card">
+            <div class="evidence-header-row">
+              <div class="evidence-header-text">
+                <h3 class="evidence-section-title">{{ 'evaluation.evidenceTitle' | translate }}</h3>
+                <p class="evidence-section-subtitle">{{ 'evaluation.evidenceSubtitle' | translate }}</p>
+              </div>
+              <span class="evidence-count-pill">
+                {{ 'evaluation.evidenceCount' | translate:{ count: allSkillObservations().length } }}
+              </span>
+            </div>
+
+            <div class="evidence-observations-grid">
+              @for (obs of allSkillObservations(); track $index) {
+                <div class="observation-card">
+                  <div class="obs-header">
+                    <span class="obs-skill-tag" dir="ltr">{{ obs.skill }}</span>
+                    <span class="signal-badge" [ngClass]="getSignalBadgeClass(obs.signal)">
+                      <span class="signal-icon">{{ getSignalIcon(obs.signal) }}</span>
+                      <span>{{ getSignalLabelKey(obs.signal) | translate }}</span>
+                    </span>
+                  </div>
+                  <p class="obs-evidence-text" dir="auto">{{ obs.evidence }}</p>
+                </div>
+              }
+            </div>
+          </section>
+
+          <!-- Challenge-by-Challenge Breakdown -->
+          <section class="challenge-breakdown-section">
+            <div class="breakdown-header">
+              <h3 class="breakdown-title">{{ 'evaluation.challengeBreakdown' | translate }}</h3>
+            </div>
+
+            <div class="breakdown-layout">
+              <!-- Left: Challenges selector list -->
+              <aside class="breakdown-sidebar">
+                <div class="breakdown-nav-list">
+                  @for (c of s.challenges; track c.id; let idx = $index) {
+                    <button
+                      type="button"
+                      class="breakdown-nav-item"
+                      [class.is-active]="activeResultIndex() === idx"
+                      (click)="selectResultChallenge(idx)"
+                    >
+                      <div class="nav-item-top">
+                        <span class="nav-question-num">{{ 'session.challengeNum' | translate:{ num: c.order } }}</span>
+                        <span
+                          class="challenge-diff-pill"
+                          [class.diff-easy]="c.difficulty.toLowerCase() === 'easy'"
+                          [class.diff-medium]="c.difficulty.toLowerCase() === 'medium'"
+                          [class.diff-hard]="c.difficulty.toLowerCase() === 'hard'"
+                        >
+                          {{ c.difficulty }}
+                        </span>
+                      </div>
+                      <span class="nav-question-title">{{ c.title }}</span>
+                    </button>
+                  }
+                </div>
+              </aside>
+
+              <!-- Right: Detailed Review Pane -->
+              <main class="breakdown-detail-pane">
+                @if (activeResultChallenge(); as active) {
+                  @if (active.challenge; as currChallenge) {
+                    <div class="breakdown-detail-card">
+                      <!-- Question Info Banner -->
+                      <div class="detail-top-banner">
+                        <div class="detail-meta-tags">
+                          <span class="detail-order-tag">
+                            {{ 'session.challengeOf' | translate:{ current: currChallenge.order, total: totalChallenges() } }}
+                          </span>
+                          <span class="challenge-type-badge">{{ currChallenge.type }}</span>
+                          <span
+                            class="challenge-diff-badge"
+                            [class.diff-easy]="currChallenge.difficulty.toLowerCase() === 'easy'"
+                            [class.diff-medium]="currChallenge.difficulty.toLowerCase() === 'medium'"
+                            [class.diff-hard]="currChallenge.difficulty.toLowerCase() === 'hard'"
+                          >
+                            {{ currChallenge.difficulty }}
+                          </span>
+                        </div>
+                        <h2 class="detail-challenge-title">{{ currChallenge.title }}</h2>
+                      </div>
+
+                      <!-- Original Prompt Container -->
+                      <div class="detail-section">
+                        <span class="detail-section-title">{{ 'evaluation.originalPrompt' | translate }}</span>
+                        <div class="prompt-display-box" dir="auto">{{ currChallenge.prompt }}</div>
+                      </div>
+
+                      <!-- Submitted Answer Container -->
+                      <div class="detail-section">
+                        <span class="detail-section-title">{{ 'evaluation.submittedAnswer' | translate }}</span>
+                        <div class="answer-display-box" dir="auto">
+                          {{ currChallenge.answer || answers()[currChallenge.id] || '—' }}
+                        </div>
+                      </div>
+
+                      <!-- Review Insights & Breakdown -->
+                      @if (active.review; as rev) {
+                        <!-- AI Review Summary -->
+                        <div class="review-summary-block">
+                          <span class="detail-section-title">{{ 'evaluation.overallSummary' | translate }}</span>
+                          <p class="review-summary-text" dir="auto">{{ rev.summary }}</p>
+                        </div>
+
+                        <div class="strengths-gaps-grid">
+                          <!-- Demonstrated Strengths -->
+                          @if (rev.strengths && rev.strengths.length > 0) {
+                            <div class="strengths-box">
+                              <div class="box-header green-header">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                  <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <span>{{ 'evaluation.strengths' | translate }}</span>
+                              </div>
+                              <ul class="feedback-list">
+                                @for (str of rev.strengths; track $index) {
+                                  <li dir="auto">{{ str }}</li>
+                                }
+                              </ul>
+                            </div>
+                          }
+
+                          <!-- Areas to Sharpen -->
+                          @if (rev.gaps && rev.gaps.length > 0) {
+                            <div class="gaps-box">
+                              <div class="box-header amber-header">
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                  <circle cx="12" cy="12" r="10"/>
+                                  <line x1="12" y1="8" x2="12" y2="12"/>
+                                  <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                </svg>
+                                <span>{{ 'evaluation.gaps' | translate }}</span>
+                              </div>
+                              <ul class="feedback-list">
+                                @for (gap of rev.gaps; track $index) {
+                                  <li dir="auto">{{ gap }}</li>
+                                }
+                              </ul>
+                            </div>
+                          }
+                        </div>
+
+                        <!-- Question Observations -->
+                        @if (rev.observations && rev.observations.length > 0) {
+                          <div class="review-obs-section">
+                            <span class="detail-section-title">{{ 'evaluation.observations' | translate }}</span>
+                            <div class="obs-pills-list">
+                              @for (obs of rev.observations; track $index) {
+                                <div class="review-obs-item">
+                                  <div class="obs-item-header">
+                                    <span class="obs-skill-tag" dir="ltr">{{ obs.skill }}</span>
+                                    <span class="signal-badge" [ngClass]="getSignalBadgeClass(obs.signal)">
+                                      <span class="signal-icon">{{ getSignalIcon(obs.signal) }}</span>
+                                      <span>{{ getSignalLabelKey(obs.signal) | translate }}</span>
+                                    </span>
+                                  </div>
+                                  <p class="obs-item-desc" dir="auto">{{ obs.evidence }}</p>
+                                </div>
+                              }
+                            </div>
+                          </div>
+                        }
+                      }
+                    </div>
+                  }
+                }
+              </main>
+            </div>
+          </section>
+
+          <!-- Bottom Return Action -->
+          <div class="results-footer-actions">
+            <a routerLink="/dashboard" class="btn btn-secondary">
+              {{ 'evaluation.backToDashboard' | translate }}
+            </a>
+            <button type="button" class="btn btn-primary" (click)="startNewSession()">
+              {{ 'evaluation.newSession' | translate }}
+            </button>
+          </div>
+        </div>
+      }
+    }
+  }
+
+  <!-- 6. ACTIVE ANSWERING WORKSPACE -->
   @else if (session(); as s) {
     <!-- Workspace Top Header -->
     <header class="workspace-header">

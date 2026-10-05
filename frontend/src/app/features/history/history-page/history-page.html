@@ -1,17 +1,79 @@
-<div class="view-empty-state">
-  <div class="empty-icon-wrap">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <polyline points="12 6 12 12 16 14"/>
-    </svg>
-  </div>
-  <h2 class="empty-title">{{ 'history.emptyTitle' | translate }}</h2>
-  <p class="empty-description">
-    {{ 'history.emptyDesc' | translate }}
-  </p>
-  <div class="empty-actions">
-    <a routerLink="/dashboard" class="btn btn-secondary btn-sm">
-      {{ 'empty.returnHome' | translate }}
+<div class="history-container">
+  <!-- Page Header -->
+  <header class="history-header">
+    <div class="header-text">
+      <h1 class="history-title">{{ 'history.title' | translate }}</h1>
+      <p class="history-subtitle">{{ 'history.subtitle' | translate }}</p>
+    </div>
+    <a routerLink="/dashboard" class="btn btn-primary btn-sm">
+      {{ 'evaluation.newSession' | translate }}
     </a>
-  </div>
+  </header>
+
+  <!-- Empty State -->
+  @if (!hasSessions()) {
+    <div class="view-empty-state">
+      <div class="empty-icon-wrap">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </div>
+      <h2 class="empty-title">{{ 'history.emptyTitle' | translate }}</h2>
+      <p class="empty-description">
+        {{ 'history.emptyDesc' | translate }}
+      </p>
+      <div class="empty-actions">
+        <a routerLink="/dashboard" class="btn btn-secondary btn-sm">
+          {{ 'empty.returnHome' | translate }}
+        </a>
+      </div>
+    </div>
+  }
+
+  <!-- Sessions List -->
+  @else {
+    <div class="history-list">
+      @for (item of sessions(); track item.id) {
+        <div class="history-card">
+          <div class="history-card-main">
+            <div class="card-top-row">
+              <span class="badge" [ngClass]="getStatusClass(item.status)">
+                @if (item.status === 'Completed') {
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                }
+                {{ getStatusLabelKey(item.status) | translate }}
+              </span>
+
+              <span class="session-date-tag">
+                {{ (item.completedAt || item.createdAt) | date:'mediumDate' }}
+              </span>
+            </div>
+
+            <h2 class="session-card-title">{{ item.title }}</h2>
+            <p class="session-card-goal">{{ item.goal }}</p>
+
+            <div class="card-meta-row">
+              <span class="meta-pill">
+                {{ 'history.challengesCount' | translate:{ count: item.challengesCount } }}
+              </span>
+              <span class="meta-pill-id" dir="ltr">{{ item.id.substring(0, 8) }}...</span>
+            </div>
+          </div>
+
+          <div class="history-card-action">
+            <a [routerLink]="['/session', item.id]" class="btn btn-secondary btn-card-open">
+              <span>{{ (item.status === 'Completed' ? 'history.viewResults' : 'history.continueSession') | translate }}</span>
+              <svg class="flip-rtl" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      }
+    </div>
+  }
 </div>

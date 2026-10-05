@@ -1,108 +1,200 @@
-<!-- Header Section -->
-<header class="dashboard-header">
-  <div class="header-main">
-    <h1 class="welcome-title">{{ 'home.welcome' | translate:{ name: user()?.displayName } }}</h1>
-    <div class="metadata-row">
-      <span class="metadata-item">{{ profile()?.targetRole || 'Software Engineering' }}</span>
-      <span class="metadata-dot">·</span>
-      <span class="metadata-item">{{ 'home.preferredSession' | translate:{ minutes: profile()?.preferredSessionMinutes || 20 } }}</span>
-      @if (user()?.emailConfirmed) {
-        <span class="metadata-dot">·</span>
-        <span class="verified-badge">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"/>
+<div class="dashboard-page animate-fade">
+  <!-- Greeting Header -->
+  <header class="dashboard-greeting">
+    <span class="greeting-eyebrow">{{ 'home.eyebrow' | translate }}</span>
+    <h1 class="greeting-headline">{{ 'home.welcome' | translate:{ name: user()?.displayName || 'Developer' } }}</h1>
+    <p class="greeting-sub">{{ 'home.subtitle' | translate }}</p>
+  </header>
+
+  <!-- Top 3 Stat Cards -->
+  <section class="stat-cards-grid" aria-label="Quick metrics">
+    <!-- Stat Card 1: Completed Sessions -->
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-icon-wrap" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
           </svg>
-          {{ 'home.verified' | translate }}
         </span>
-      }
+        <span class="stat-label">{{ 'home.statCompleted' | translate }}</span>
+      </div>
+      <div class="stat-value">12</div>
+      <div class="stat-trend">{{ 'home.statCompletedTrend' | translate }}</div>
     </div>
-  </div>
-</header>
 
-<!-- Main Primary Section: Your First Adaptive Session -->
-<section class="first-session-card">
-  <div class="first-session-content">
-    <div class="session-eyebrow">{{ 'home.eyebrow' | translate }}</div>
-    <h2 class="session-title">{{ 'home.sessionTitle' | translate }}</h2>
-    <p class="session-copy">
-      {{ 'home.sessionCopy' | translate }}
-    </p>
-    <div class="session-actions">
-      <button
-        type="button"
-        class="btn btn-primary"
-        (click)="triggerFirstSession()"
-        [disabled]="isGenerating()"
-      >
-        @if (isGenerating()) {
-          <span class="spinner-small" aria-hidden="true"></span>
-          <span>{{ 'session.generating' | translate }}</span>
-        } @else {
-          <span>{{ 'home.buildSessionBtn' | translate }}</span>
-          <svg class="flip-rtl" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12"/>
-            <polyline points="12 5 19 12 12 19"/>
+    <!-- Stat Card 2: Average Performance -->
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-icon-wrap" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
           </svg>
-        }
-      </button>
+        </span>
+        <span class="stat-label">{{ 'home.statAvg' | translate }}</span>
+      </div>
+      <div class="stat-value">78%</div>
+      <div class="stat-trend">{{ 'home.statAvgTrend' | translate }}</div>
     </div>
 
-    <!-- Active Generation Feedback -->
-    @if (isGenerating()) {
-      <div class="session-generating-banner">
-        <div class="generating-pulse"></div>
-        <div class="generating-text">
-          <strong>{{ 'session.generating' | translate }}</strong>
-          <p>{{ 'session.generatingSubtitle' | translate }}</p>
-        </div>
+    <!-- Stat Card 3: Practice Streak -->
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-icon-wrap" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </span>
+        <span class="stat-label">{{ 'home.statStreak' | translate }}</span>
       </div>
-    }
-
-    <!-- Error Alert -->
-    @if (errorMessage(); as err) {
-      <div class="alert alert-error" role="alert">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/>
-          <line x1="12" y1="8" x2="12" y2="12"/>
-          <line x1="12" y1="16" x2="12.01" y2="16"/>
-        </svg>
-        <span>{{ err | translate }}</span>
-        <button type="button" class="btn btn-sm btn-ghost" (click)="triggerFirstSession()">
-          {{ 'session.retry' | translate }}
-        </button>
-      </div>
-    }
-  </div>
-</section>
-
-<!-- Learning Context Section (Using REAL persisted profile data) -->
-@if (profile(); as p) {
-  <section class="context-section">
-    <div class="section-header-compact">
-      <h3 class="section-title">{{ 'home.learningContext' | translate }}</h3>
-      <span class="section-hint">{{ 'home.learningContextHint' | translate }}</span>
-    </div>
-
-    <div class="context-grid">
-      <div class="context-card">
-        <span class="context-label">{{ 'home.targetRole' | translate }}</span>
-        <p class="context-value">{{ p.targetRole }}</p>
-      </div>
-
-      <div class="context-card">
-        <span class="context-label">{{ 'home.primaryGoal' | translate }}</span>
-        <p class="context-value">{{ p.goal }}</p>
-      </div>
-
-      <div class="context-card">
-        <span class="context-label">{{ 'home.sessionLength' | translate }}</span>
-        <p class="context-value">{{ p.preferredSessionMinutes }} {{ langService.currentLanguage() === 'ar' ? 'دقيقة' : 'min' }}</p>
-      </div>
-
-      <div class="context-card context-card-full">
-        <span class="context-label">{{ 'home.background' | translate }}</span>
-        <p class="context-value context-bio">{{ p.background }}</p>
-      </div>
+      <div class="stat-value">4</div>
+      <div class="stat-trend">{{ 'home.statStreakTrend' | translate }}</div>
     </div>
   </section>
-}
+
+  <!-- Main Content 2-Column Split -->
+  <div class="dashboard-main-grid">
+    <!-- Left / Primary Column -->
+    <div class="dashboard-primary-col">
+      <!-- Dark Forest Green Session Banner (Screenshot 1) -->
+      <section class="session-banner-card">
+        <!-- Giant Decorative Braces -->
+        <span class="decorative-brace brace-left" aria-hidden="true">&#123;</span>
+        <span class="decorative-brace brace-right" aria-hidden="true">&#125;</span>
+
+        <div class="banner-content">
+          <span class="banner-eyebrow">{{ 'home.bannerEyebrow' | translate }}</span>
+          <h2 class="banner-title">{{ profile()?.targetRole || ('home.bannerTitle' | translate) }}</h2>
+          <p class="banner-meta">
+            {{ profile()?.targetRole || '.NET' }} · {{ 'onboarding.levelMid' | translate }} · 5 {{ langService.currentLanguage() === 'ar' ? 'أسئلة' : 'questions' }} · {{ profile()?.preferredSessionMinutes || 10 }} {{ langService.currentLanguage() === 'ar' ? 'دقائق' : 'mins' }}
+          </p>
+
+          <div class="banner-cta-wrap">
+            <button
+              type="button"
+              class="btn-banner-lime"
+              (click)="triggerFirstSession()"
+              [disabled]="isGenerating()"
+            >
+              @if (isGenerating()) {
+                <span class="spinner-small" aria-hidden="true"></span>
+                <span>{{ 'session.generating' | translate }}</span>
+              } @else {
+                <span>{{ 'home.bannerCta' | translate }}</span>
+              }
+            </button>
+          </div>
+
+          <!-- Active Generation Banner -->
+          @if (isGenerating()) {
+            <div class="generating-info-box animate-fade">
+              <span class="generating-dot"></span>
+              <span>{{ 'session.generatingSubtitle' | translate }}</span>
+            </div>
+          }
+
+          <!-- Error Alert inside Banner -->
+          @if (errorMessage(); as err) {
+            <div class="banner-error-box animate-fade">
+              <span>{{ err | translate }}</span>
+              <button type="button" class="btn-retry-text" (click)="triggerFirstSession()">
+                {{ 'session.retry' | translate }}
+              </button>
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- Recent Sessions Section -->
+      <section class="recent-sessions-card">
+        <div class="recent-header">
+          <h3 class="recent-title">{{ 'home.recentSessions' | translate }}</h3>
+          <a routerLink="/history" class="recent-link">{{ 'home.viewAll' | translate }}</a>
+        </div>
+
+        <div class="recent-list">
+          @if (recentSessions().length > 0) {
+            @for (item of recentSessions(); track item.id) {
+              <a [routerLink]="['/session', item.id]" class="recent-item recent-item-clickable">
+                <div class="recent-item-meta">
+                  <h4 class="recent-item-title">{{ item.title }}</h4>
+                  <span class="recent-item-date">
+                    {{ (item.completedAt || item.createdAt) | date:'mediumDate' }} · {{ 'history.challengesCount' | translate:{ count: item.challengesCount } }}
+                  </span>
+                </div>
+                <span class="badge" [ngClass]="getStatusClass(item.status)">
+                  {{ getStatusLabelKey(item.status) | translate }}
+                </span>
+              </a>
+            }
+          } @else {
+            <div class="recent-empty-hint">
+              <p class="recent-empty-text">{{ 'history.emptyDesc' | translate }}</p>
+            </div>
+          }
+        </div>
+      </section>
+    </div>
+
+    <!-- Right / Side Column -->
+    <div class="dashboard-side-col">
+      <!-- Skill Map Card (Screenshot 1) -->
+      <section class="skill-map-card">
+        <div class="skill-map-header">
+          <span class="skill-map-icon">&#x2318;</span>
+          <h3 class="skill-map-title">{{ 'home.skillMapTitle' | translate }}</h3>
+        </div>
+
+        <div class="skills-progress-list">
+          <!-- Skill 1 -->
+          <div class="skill-bar-item">
+            <div class="skill-bar-info">
+              <span class="skill-name">{{ 'home.skill1' | translate }}</span>
+              <span class="skill-percentage">85%</span>
+            </div>
+            <div class="skill-track">
+              <div class="skill-fill" style="width: 85%;"></div>
+            </div>
+          </div>
+
+          <!-- Skill 2 -->
+          <div class="skill-bar-item">
+            <div class="skill-bar-info">
+              <span class="skill-name">{{ 'home.skill2' | translate }}</span>
+              <span class="skill-percentage">72%</span>
+            </div>
+            <div class="skill-track">
+              <div class="skill-fill" style="width: 72%;"></div>
+            </div>
+          </div>
+
+          <!-- Skill 3 -->
+          <div class="skill-bar-item">
+            <div class="skill-bar-info">
+              <span class="skill-name">{{ 'home.skill3' | translate }}</span>
+              <span class="skill-percentage">58%</span>
+            </div>
+            <div class="skill-track">
+              <div class="skill-fill" style="width: 58%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-map-footnote">
+          <span class="footnote-icon">☼</span>
+          <span>{{ 'home.skillMapHint' | translate }}</span>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

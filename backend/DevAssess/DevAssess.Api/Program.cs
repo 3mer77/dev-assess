@@ -97,6 +97,15 @@ builder.Services.AddSingleton<
 builder.Services.AddScoped<
     ISessionService,
     SessionService>();
+builder.Services.AddScoped<
+    IAnswerReviewer,
+    GeminiAnswerReviewer>();
+builder.Services.AddScoped<
+    IEvaluationService,
+    EvaluationService>();
+builder.Services.AddSingleton<
+    IAnswerEvaluationValidator,
+    AnswerEvaluationValidator>();
 
 builder.Services.AddHttpClient<
     IEmailService,

@@ -1,220 +1,282 @@
-<app-auth-layout
-  [headline]="'onboarding.title' | translate"
-  [subheadline]="'onboarding.subtitle' | translate"
-  [steps]="steps"
-  [userEmail]="currentUser()?.email"
-  [showLogout]="true"
-  (logoutClicked)="onLogout()"
->
-  @if (errorMessage()) {
-    <div class="alert alert-error" role="alert">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="8" x2="12" y2="12"/>
-        <line x1="12" y1="16" x2="12.01" y2="16"/>
-      </svg>
-      <div>{{ errorMessage() }}</div>
+<div class="onboarding-page">
+  <!-- Minimal Top Header for Onboarding -->
+  <header class="onboarding-header">
+    <div class="header-inner">
+      <a routerLink="/" class="brand-logo" title="DevAssess Home">
+        <span class="brand-text">DevAssess<span class="brand-dot">.</span></span>
+        <span class="brand-box" aria-hidden="true">&#x2318;</span>
+      </a>
+
+      <div class="header-right">
+        <!-- Language Switcher -->
+        <button
+          type="button"
+          class="lang-toggle-btn"
+          (click)="setLanguage(langService.currentLanguage() === 'en' ? 'ar' : 'en')"
+        >
+          <span class="globe-icon">🌐</span>
+          <span>{{ langService.currentLanguage() === 'en' ? 'عربي' : 'English' }}</span>
+        </button>
+
+        @if (currentUser(); as u) {
+          <button type="button" class="btn-ghost-sm" (click)="onLogout()">
+            {{ 'nav.signOut' | translate }}
+          </button>
+        } @else {
+          <a routerLink="/login" class="nav-link">{{ 'nav.login' | translate }}</a>
+        }
+      </div>
     </div>
-  }
+  </header>
 
-  <form [formGroup]="form" novalidate>
-    <!-- STEP 1: Target Role -->
-    @if (currentStep() === 1) {
-      <div class="step-view">
-        <div class="form-header">
-          <div class="step-badge">1 / 3</div>
-          <h1 class="form-title">{{ 'onboarding.step1Title' | translate }}</h1>
-          <p class="form-desc">{{ 'onboarding.step1Subtitle' | translate }}</p>
+  <!-- Main Centered Content Container -->
+  <main class="onboarding-main">
+    <div class="onboarding-card">
+      <!-- Top Stepper Bar -->
+      <div class="stepper-header">
+        <span class="stepper-eyebrow">{{ 'onboarding.stepHeader' | translate }}</span>
+        <span class="stepper-count">0{{ currentStep() }} / 03</span>
+      </div>
+
+      <div class="segmented-progress-bar" role="progressbar" [attr.aria-valuenow]="currentStep()" aria-valuemin="1" aria-valuemax="3">
+        <div class="progress-segment" [class.is-active]="currentStep() >= 1"></div>
+        <div class="progress-segment" [class.is-active]="currentStep() >= 2"></div>
+        <div class="progress-segment" [class.is-active]="currentStep() >= 3"></div>
+      </div>
+
+      <!-- Error message banner -->
+      @if (errorMessage()) {
+        <div class="alert alert-error" role="alert">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <div>{{ errorMessage() }}</div>
         </div>
+      }
 
-        <div class="roles-grid">
-          @for (role of roles; track role.id) {
-            <button
-              type="button"
-              class="role-card"
-              [class.is-selected]="form.value.selectedRole === role.id"
-              (click)="selectRole(role.id)"
-            >
-              <div class="role-radio-dot"></div>
-              <div class="role-info">
-                <div class="role-name">{{ role.title }}</div>
-                <div class="role-desc">{{ role.desc }}</div>
-              </div>
-            </button>
-          }
-        </div>
+      <form [formGroup]="form" novalidate>
+        <!-- STEP 1: What's your career path? -->
+        @if (currentStep() === 1) {
+          <div class="step-content animate-fade">
+            <h1 class="step-title">{{ 'onboarding.step1Title' | translate }}</h1>
+            <p class="step-subtitle">{{ 'onboarding.step1Subtitle' | translate }}</p>
 
-        @if (form.value.selectedRole === 'Other') {
-          <div class="form-group custom-role-input">
-            <label class="form-label" for="customRole">{{ 'onboarding.step1Subtitle' | translate }}</label>
-            <input
-              id="customRole"
-              type="text"
-              class="form-control"
-              formControlName="customRole"
-              placeholder="e.g. Embedded Firmware Engineer"
-            />
+            <div class="roles-grid">
+              @for (role of roles; track role.id) {
+                <button
+                  type="button"
+                  class="role-card"
+                  [class.is-selected]="form.value.selectedRole === role.id"
+                  (click)="selectRole(role.id)"
+                >
+                  <div class="role-icon-box">{{ role.icon }}</div>
+                  <div class="role-text-wrap">
+                    <span class="role-title">{{ role.titleKey | translate }}</span>
+                    <span class="role-desc">{{ role.descKey | translate }}</span>
+                  </div>
+                  @if (form.value.selectedRole === role.id) {
+                    <span class="selection-check" aria-hidden="true">✓</span>
+                  }
+                </button>
+              }
+            </div>
+
+            <!-- Custom role option toggle -->
+            <div class="custom-role-wrapper">
+              @if (!showCustomRole() && form.value.selectedRole !== 'Other') {
+                <button type="button" class="btn-link-custom" (click)="toggleCustomRole()">
+                  + {{ 'onboarding.customRole' | translate }}
+                </button>
+              } @else {
+                <div class="custom-role-input-box animate-fade">
+                  <label class="form-label" for="customRole">{{ 'onboarding.customRole' | translate }}</label>
+                  <input
+                    id="customRole"
+                    type="text"
+                    class="form-input"
+                    formControlName="customRole"
+                    [placeholder]="'onboarding.customRolePlaceholder' | translate"
+                  />
+                </div>
+              }
+            </div>
+
+            <!-- Step Actions -->
+            <div class="step-actions">
+              <span class="action-spacer"></span>
+              <button
+                type="button"
+                class="btn btn-primary"
+                id="step1-continue"
+                (click)="goToNextStep()"
+              >
+                {{ 'common.continue' | translate }}
+              </button>
+            </div>
           </div>
         }
 
-        <div class="step-actions">
-          <button
-            type="button"
-            class="btn btn-primary btn-full btn-lg"
-            id="step1-continue"
-            (click)="goToNextStep()"
-          >
-            {{ 'common.continue' | translate }}
-            <svg class="flip-rtl" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 18 15 12 9 6"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    }
+        <!-- STEP 2: Which technologies do you work with? -->
+        @if (currentStep() === 2) {
+          <div class="step-content animate-fade">
+            <h1 class="step-title">{{ 'onboarding.step2Title' | translate }}</h1>
+            <p class="step-subtitle">{{ 'onboarding.step2Subtitle' | translate }}</p>
 
-    <!-- STEP 2: Background & Stack -->
-    @if (currentStep() === 2) {
-      <div class="step-view">
-        <div class="form-header">
-          <div class="step-badge">2 / 3</div>
-          <h1 class="form-title">{{ 'onboarding.step2Title' | translate }}</h1>
-          <p class="form-desc">{{ 'onboarding.step2Subtitle' | translate }}</p>
-        </div>
+            <div class="form-group">
+              <label class="form-label" for="background">
+                {{ 'home.background' | translate }}
+              </label>
+              <textarea
+                id="background"
+                class="form-input form-textarea"
+                formControlName="background"
+                rows="3"
+                [placeholder]="'onboarding.customStackPlaceholder' | translate"
+              ></textarea>
+            </div>
 
-        <div class="form-group">
-          <label class="form-label" for="background">
-            {{ 'home.background' | translate }} <span class="required">*</span>
-          </label>
-          <textarea
-            id="background"
-            class="form-control"
-            formControlName="background"
-            rows="4"
-            [placeholder]="'onboarding.backgroundPlaceholder' | translate"
-          ></textarea>
-          <span class="field-hint">
-            @if (langService.currentLanguage() === 'ar') {
-              تلميح: انقر على التقنيات أدناه لإضافتها مباشرة إلى خلفيتك البرمجية:
-            } @else {
-              Tip: Click the common technologies below to quickly append them to your profile:
-            }
-          </span>
+            <div class="chips-section">
+              <span class="chips-label">
+                @if (langService.currentLanguage() === 'ar') {
+                  انقر على التقنيات لإضافتها:
+                } @else {
+                  Click common technologies to add:
+                }
+              </span>
+              <div class="chips-cloud">
+                @for (tech of techSuggestions; track tech) {
+                  <button
+                    type="button"
+                    class="tech-chip"
+                    (click)="addTechChip(tech)"
+                  >
+                    + {{ tech }}
+                  </button>
+                }
+              </div>
+            </div>
 
-          <div class="chips-cloud">
-            @for (tech of techSuggestions; track tech) {
+            <!-- Step Actions -->
+            <div class="step-actions dual-actions">
               <button
                 type="button"
-                class="tech-chip"
-                (click)="addTechChip(tech)"
+                class="btn-text-back"
+                (click)="goToPreviousStep()"
               >
-                + {{ tech }}
+                {{ 'common.back' | translate }}
               </button>
-            }
-          </div>
-        </div>
-
-        <div class="step-actions dual-actions">
-          <button
-            type="button"
-            class="btn btn-secondary btn-lg"
-            (click)="goToPreviousStep()"
-          >
-            <svg class="flip-rtl" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="15 18 9 12 15 6"/>
-            </svg>
-            {{ 'common.back' | translate }}
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary btn-lg"
-            id="step2-continue"
-            (click)="goToNextStep()"
-          >
-            {{ 'common.continue' | translate }}
-            <svg class="flip-rtl" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 18 15 12 9 6"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    }
-
-    <!-- STEP 3: Goals & Sessions -->
-    @if (currentStep() === 3) {
-      <div class="step-view">
-        <div class="form-header">
-          <div class="step-badge">3 / 3</div>
-          <h1 class="form-title">{{ 'onboarding.step3Title' | translate }}</h1>
-          <p class="form-desc">{{ 'onboarding.step3Subtitle' | translate }}</p>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="goal">
-            {{ 'onboarding.goalLabel' | translate }} <span class="required">*</span>
-          </label>
-          <input
-            id="goal"
-            type="text"
-            class="form-control"
-            formControlName="goal"
-            [placeholder]="'onboarding.goalPlaceholder' | translate"
-          />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">
-            {{ 'onboarding.durationLabel' | translate }} <span class="required">*</span>
-          </label>
-          <div class="session-cards-grid">
-            @for (opt of sessionOptions; track opt.minutes) {
               <button
                 type="button"
-                class="session-card"
-                [class.is-selected]="form.value.preferredSessionMinutes === opt.minutes"
-                (click)="selectSessionMinutes(opt.minutes)"
+                class="btn btn-primary"
+                id="step2-continue"
+                (click)="goToNextStep()"
               >
-                <div class="session-time">{{ opt.minutes }} {{ langService.currentLanguage() === 'ar' ? 'دقيقة' : 'min' }}</div>
-                <div class="session-desc">
-                  @switch (opt.minutes) {
-                    @case (10) { {{ 'onboarding.duration10' | translate }} }
-                    @case (20) { {{ 'onboarding.duration20' | translate }} }
-                    @case (40) { {{ 'onboarding.duration40' | translate }} }
-                    @default { {{ opt.desc }} }
-                  }
-                </div>
+                {{ 'common.continue' | translate }}
               </button>
-            }
+            </div>
           </div>
-        </div>
+        }
 
-        <div class="step-actions dual-actions">
-          <button
-            type="button"
-            class="btn btn-secondary btn-lg"
-            [disabled]="loading()"
-            (click)="goToPreviousStep()"
-          >
-            <svg class="flip-rtl" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="15 18 9 12 15 6"/>
-            </svg>
-            {{ 'common.back' | translate }}
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary btn-lg"
-            id="onboarding-submit"
-            [disabled]="loading()"
-            (click)="submitOnboarding()"
-          >
-            @if (loading()) {
-              <span class="spinner"></span> {{ 'onboarding.completing' | translate }}
-            } @else {
-              {{ 'onboarding.completeBtn' | translate }}
-            }
-          </button>
-        </div>
-      </div>
-    }
-  </form>
-</app-auth-layout>
+        <!-- STEP 3: Experience level and duration -->
+        @if (currentStep() === 3) {
+          <div class="step-content animate-fade">
+            <h1 class="step-title">{{ 'onboarding.step3Title' | translate }}</h1>
+            <p class="step-subtitle">{{ 'onboarding.step3Subtitle' | translate }}</p>
+
+            <!-- Experience Level Selection -->
+            <div class="section-block">
+              <label class="form-label">
+                @if (langService.currentLanguage() === 'ar') {
+                  المستوى الهندسي
+                } @else {
+                  Engineering Level
+                }
+              </label>
+              <div class="levels-grid">
+                @for (lvl of experienceLevels; track lvl.id) {
+                  <button
+                    type="button"
+                    class="level-card"
+                    [class.is-selected]="form.value.experienceLevel === lvl.id"
+                    (click)="selectLevel(lvl.id)"
+                  >
+                    <span class="level-title">{{ lvl.titleKey | translate }}</span>
+                    <span class="level-desc">{{ lvl.descKey | translate }}</span>
+                    @if (form.value.experienceLevel === lvl.id) {
+                      <span class="selection-check" aria-hidden="true">✓</span>
+                    }
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- Duration Selection -->
+            <div class="section-block">
+              <label class="form-label">{{ 'onboarding.durationLabel' | translate }}</label>
+              <div class="durations-grid">
+                @for (opt of sessionOptions; track opt.minutes) {
+                  <button
+                    type="button"
+                    class="duration-card"
+                    [class.is-selected]="form.value.preferredSessionMinutes === opt.minutes"
+                    (click)="selectSessionMinutes(opt.minutes)"
+                  >
+                    <span class="duration-title">{{ opt.minutes }} {{ langService.currentLanguage() === 'ar' ? 'دقائق' : 'min' }}</span>
+                    <span class="duration-desc">{{ opt.labelKey | translate }}</span>
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- Learning Goal Input -->
+            <div class="section-block">
+              <label class="form-label" for="goal">
+                @if (langService.currentLanguage() === 'ar') {
+                  هدفك من التدريب
+                } @else {
+                  Your Practice Goal
+                }
+              </label>
+              <input
+                id="goal"
+                type="text"
+                class="form-input"
+                formControlName="goal"
+                placeholder="e.g. Prepare for senior full-stack interview"
+              />
+            </div>
+
+            <!-- Step Actions -->
+            <div class="step-actions dual-actions">
+              <button
+                type="button"
+                class="btn-text-back"
+                [disabled]="loading()"
+                (click)="goToPreviousStep()"
+              >
+                {{ 'common.back' | translate }}
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                id="onboarding-submit"
+                [disabled]="loading()"
+                (click)="submitOnboarding()"
+              >
+                @if (loading()) {
+                  <span class="spinner-sm" aria-hidden="true"></span>
+                  <span>{{ 'onboarding.saving' | translate }}</span>
+                } @else {
+                  <span>{{ 'onboarding.finish' | translate }}</span>
+                }
+              </button>
+            </div>
+          </div>
+        }
+      </form>
+    </div>
+  </main>
+</div>
+
