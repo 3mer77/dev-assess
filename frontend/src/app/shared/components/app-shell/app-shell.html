@@ -1,12 +1,22 @@
 <div class="app-layout">
-  <!-- Sidebar Navigation (Matching Screenshot 1) -->
-  <aside class="app-sidebar">
+  <!-- Mobile Backdrop Overlay -->
+  @if (isMobileMenuOpen()) {
+    <div class="sidebar-backdrop animate-fade" (click)="closeMobileMenu()"></div>
+  }
+
+  <!-- Sidebar Navigation -->
+  <aside class="app-sidebar" [class.is-open]="isMobileMenuOpen()">
     <!-- Brand Header -->
     <div class="sidebar-brand-wrapper">
-      <a routerLink="/dashboard" class="brand-logo" title="DevAssess">
+      <a routerLink="/dashboard" class="brand-logo" (click)="closeMobileMenu()" title="DevAssess">
         <span class="brand-text">DevAssess<span class="brand-dot">.</span></span>
         <span class="brand-box" aria-hidden="true">&#x2318;</span>
       </a>
+
+      <!-- Mobile Close Button inside drawer -->
+      <button type="button" class="btn-close-drawer" (click)="closeMobileMenu()" aria-label="Close menu">
+        ✕
+      </button>
     </div>
 
     <!-- Navigation Menu -->
@@ -18,6 +28,7 @@
             routerLinkActive="is-active"
             [routerLinkActiveOptions]="{ exact: true }"
             class="nav-item"
+            (click)="closeMobileMenu()"
           >
             <span class="nav-icon-wrap">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -35,6 +46,7 @@
             routerLink="/history"
             routerLinkActive="is-active"
             class="nav-item"
+            (click)="closeMobileMenu()"
           >
             <span class="nav-icon-wrap">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -50,6 +62,7 @@
             routerLink="/skills"
             routerLinkActive="is-active"
             class="nav-item"
+            (click)="closeMobileMenu()"
           >
             <span class="nav-icon-wrap">
               <span class="nav-symbol">&#x2318;</span>
@@ -62,6 +75,7 @@
             routerLink="/profile"
             routerLinkActive="is-active"
             class="nav-item"
+            (click)="closeMobileMenu()"
           >
             <span class="nav-icon-wrap">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -77,7 +91,7 @@
 
     <!-- Sidebar Bottom Section -->
     <div class="sidebar-bottom-area">
-      <!-- Encouragement Callout Widget (Screenshot 1) -->
+      <!-- Encouragement Callout Widget -->
       <div class="sidebar-callout-card">
         <h4 class="callout-title">{{ 'home.sidebarCalloutTitle' | translate }}</h4>
         <p class="callout-desc">{{ 'home.sidebarCalloutSub' | translate }}</p>
@@ -128,14 +142,29 @@
   <div class="app-main-wrapper">
     <!-- Top Action Bar -->
     <header class="app-topbar">
-      <!-- Breadcrumb -->
-      <div class="topbar-breadcrumb">
-        <span class="breadcrumb-brand">DevAssess</span>
-        <span class="breadcrumb-slash">/</span>
-        <span class="breadcrumb-page">{{ 'brand.tagline' | translate }}</span>
+      <!-- Mobile Menu Button & Breadcrumb -->
+      <div class="topbar-left-cluster">
+        <button
+          type="button"
+          class="btn-mobile-menu"
+          (click)="toggleMobileMenu()"
+          aria-label="Toggle navigation menu"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+
+        <div class="topbar-breadcrumb">
+          <span class="breadcrumb-brand">DevAssess</span>
+          <span class="breadcrumb-slash">/</span>
+          <span class="breadcrumb-page">{{ currentSectionKey() | translate }}</span>
+        </div>
       </div>
 
-      <!-- Topbar Right/Left Controls -->
+      <!-- Topbar Right Controls -->
       <div class="topbar-controls">
         <!-- Language Switcher -->
         <button

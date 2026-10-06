@@ -446,6 +446,31 @@
     grid-template-columns: 1fr;
   }
   .stat-cards-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .stat-cards-grid {
     grid-template-columns: 1fr;
+  }
+  .greeting-headline {
+    font-size: 24px;
+  }
+  .greeting-sub {
+    font-size: 13.5px;
+  }
+  .session-banner-card {
+    padding: 24px 20px;
+  }
+  .banner-headline {
+    font-size: 22px;
+  }
+  .decorative-brace {
+    display: none;
+  }
+  .recent-sessions-card,
+  .skill-map-card {
+    padding: 18px 16px;
   }
 }

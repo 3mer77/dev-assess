@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════
-   DevAssess — App Shell Styles (Redesign)
+   DevAssess — App Shell Styles (Redesign & Mobile Responsive)
    ═══════════════════════════════════════════════ */
 
 .app-layout {
@@ -8,6 +8,7 @@
   width: 100vw;
   overflow: hidden;
   background-color: var(--color-bg, #F8F9F5);
+  position: relative;
 }
 
 /* ── Sidebar ─────────────────────────────────── */
@@ -26,6 +27,9 @@
 
 .sidebar-brand-wrapper {
   padding: 24px 20px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .brand-logo {
@@ -56,6 +60,16 @@
   color: var(--color-accent-lime, #D9F583);
   border-radius: 6px;
   font-size: 13px;
+}
+
+.btn-close-drawer {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary, #78847D);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
 }
 
 /* Sidebar Nav Links */
@@ -124,7 +138,6 @@
   gap: 14px;
 }
 
-/* Encouragement Callout Card (Screenshot 1) */
 .sidebar-callout-card {
   background-color: var(--color-sidebar-callout-bg, #F4F6EE);
   border-radius: 12px;
@@ -169,7 +182,6 @@
   cursor: not-allowed;
 }
 
-/* User Profile Row */
 .sidebar-user-row {
   display: flex;
   align-items: center;
@@ -246,6 +258,7 @@
   height: 100%;
   overflow: hidden;
   background-color: var(--color-bg, #F8F9F5);
+  min-width: 0;
 }
 
 /* Top Action Bar */
@@ -258,6 +271,28 @@
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
+  gap: 12px;
+}
+
+.topbar-left-cluster {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.btn-mobile-menu {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--color-surface, #FFFFFF);
+  border: 1px solid var(--color-border, #E1E5DA);
+  border-radius: 8px;
+  color: var(--color-primary, #193F35);
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .topbar-breadcrumb {
@@ -265,6 +300,9 @@
   align-items: center;
   gap: 8px;
   font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .breadcrumb-brand {
@@ -283,7 +321,8 @@
 .topbar-controls {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .lang-pill-btn {
@@ -329,6 +368,7 @@
   align-items: center;
   gap: 8px;
   transition: background-color 0.15s;
+  white-space: nowrap;
 }
 
 .btn-topbar-start:hover:not(:disabled) {
@@ -357,11 +397,70 @@
   padding: 32px 40px;
 }
 
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(23, 61, 52, 0.4);
+  backdrop-filter: blur(2px);
+  z-index: 998;
+}
+
+/* ── Mobile Responsive Breakpoints ──────────── */
 @media (max-width: 900px) {
   .app-sidebar {
-    width: 200px;
+    width: 210px;
+  }
+  .app-topbar {
+    padding: 0 20px;
   }
   .app-content-body {
     padding: 24px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .btn-mobile-menu {
+    display: inline-flex;
+  }
+
+  .btn-close-drawer {
+    display: block;
+  }
+
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    inset-inline-start: -280px;
+    width: 270px;
+    z-index: 999;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.15);
+    transition: inset-inline-start 0.25s ease-out;
+  }
+
+  .app-sidebar.is-open {
+    inset-inline-start: 0;
+  }
+
+  .app-topbar {
+    padding: 0 14px;
+    height: 58px;
+  }
+
+  .badge-beta {
+    display: none;
+  }
+
+  .topbar-breadcrumb {
+    font-size: 12px;
+  }
+
+  .btn-topbar-start {
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+
+  .app-content-body {
+    padding: 18px 12px;
   }
 }

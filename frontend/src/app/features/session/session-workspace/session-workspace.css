@@ -921,3 +921,35 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 640px) {
+  .session-workspace-container {
+    padding: 0 0 32px;
+  }
+  .workspace-header {
+    gap: 10px;
+    padding-bottom: 10px;
+  }
+  .session-main-title {
+    font-size: 16px;
+  }
+  .session-summary-bar {
+    padding: 10px 14px;
+    gap: 10px;
+  }
+  .challenge-detail-card,
+  .breakdown-detail-card,
+  .result-summary-card,
+  .evidence-section-card {
+    padding: 16px 14px;
+    border-radius: 12px;
+  }
+  .detail-challenge-title,
+  .challenge-card-title {
+    font-size: 16px;
+  }
+  .modal-dialog {
+    max-width: 92vw;
+    padding: 22px 18px;
+  }
+}

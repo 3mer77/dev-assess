@@ -546,10 +546,26 @@
 }
 
 @media (max-width: 640px) {
+  .onboarding-panel-card {
+    padding: 24px 18px;
+    border-radius: 14px;
+  }
+  .step-title {
+    font-size: 22px;
+  }
+  .step-subtitle {
+    font-size: 13.5px;
+    margin-bottom: 24px;
+  }
   .roles-grid,
   .levels-grid,
   .durations-grid {
     grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .onboarding-nav-row {
+    margin-top: 24px;
+    padding-top: 16px;
   }
 }
 

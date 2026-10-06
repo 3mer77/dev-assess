@@ -30,11 +30,15 @@ export class AppShell {
   readonly user = this.authStore.user;
   readonly profile = this.profileStore.profile;
   readonly isStartingSession = signal(false);
+  readonly isMobileMenuOpen = signal(false);
 
-  // Track current URL reactively for the breadcrumb
+  // Track current URL reactively for the breadcrumb & close mobile drawer on navigation
   private readonly navEnd$ = this.router.events.pipe(
     filter((e): e is NavigationEnd => e instanceof NavigationEnd),
-    map((e) => e.urlAfterRedirects || e.url)
+    map((e) => {
+      this.isMobileMenuOpen.set(false);
+      return e.urlAfterRedirects || e.url;
+    })
   );
   readonly currentUrl = toSignal(this.navEnd$, { initialValue: this.router.url });
 
@@ -47,9 +51,18 @@ export class AppShell {
     return 'nav.overview';
   });
 
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen.update((open) => !open);
+  }
+
+  closeMobileMenu(): void {
+    this.isMobileMenuOpen.set(false);
+  }
+
   startNewSession(): void {
     if (this.isStartingSession()) return;
     this.isStartingSession.set(true);
+    this.closeMobileMenu();
 
     this.sessionService
       .createSession()
@@ -80,6 +93,7 @@ export class AppShell {
   }
 
   signOut(): void {
+    this.closeMobileMenu();
     this.authService
       .logout()
       .pipe(
@@ -96,4 +110,3 @@ export class AppShell {
       });
   }
 }
-
