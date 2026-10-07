@@ -13,14 +13,18 @@ public class SessionService : ISessionService
     private readonly IAssessmentPlanner _assessmentPlanner;
     private readonly ISessionPlanValidator _sessionPlanValidator;
 
+    private readonly IAssessmentBudgetService _assessmentBudgetService;
+
     public SessionService(
         AppDbContext dbContext,
         IAssessmentPlanner assessmentPlanner,
-        ISessionPlanValidator sessionPlanValidator)
+        ISessionPlanValidator sessionPlanValidator,
+        IAssessmentBudgetService assessmentBudgetService)
     {
         _dbContext = dbContext;
         _assessmentPlanner = assessmentPlanner;
         _sessionPlanValidator = sessionPlanValidator;
+        _assessmentBudgetService = assessmentBudgetService;
     }
 
     public async Task<LearningSessionResponse> CreateSessionAsync(string userId,CancellationToken cancellationToken = default)
@@ -37,12 +41,19 @@ public class SessionService : ISessionService
                 "Complete onboarding before creating a session.");
         }
 
+        var budget =
+    _assessmentBudgetService.Calculate(
+        profile.PreferredSessionMinutes);
+
         var plan = await _assessmentPlanner.CreatePlanAsync(
             profile,
+            budget,
             cancellationToken);
 
         var validationErrors =
-            _sessionPlanValidator.Validate(plan);
+    _sessionPlanValidator.Validate(
+        plan,
+        budget);
 
         if (validationErrors.Count > 0)
         {

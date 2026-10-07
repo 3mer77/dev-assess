@@ -22,13 +22,14 @@ import {
 } from '../../../core/session/session.models';
 import { LanguageService } from '../../../core/i18n/language.service';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
+import { PromptRenderer } from '../../../shared/components/prompt-renderer/prompt-renderer';
 
 export type SaveState = 'saved' | 'saving' | 'error' | 'idle';
 
 @Component({
   selector: 'app-session-workspace',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, DatePipe],
+  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, DatePipe, PromptRenderer],
   templateUrl: './session-workspace.html',
   styleUrl: './session-workspace.css',
 })

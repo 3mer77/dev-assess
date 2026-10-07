@@ -1,0 +1,142 @@
+.prompt-renderer-root {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.prompt-text-segment {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--color-text-primary, #173D34);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── Code Block Container ────────────────────────── */
+.prompt-code-block {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-code-bg, #173B32);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(23, 59, 50, 0.08);
+  direction: ltr !important;
+  text-align: left !important;
+  max-width: 100%;
+}
+
+/* ── Code Block Header ───────────────────────────── */
+.code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background-color: #123129;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+.code-lang-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.code-lang-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--color-accent-lime, #D9F583);
+}
+
+.code-lang-label {
+  font-family: 'Consolas', 'Courier New', monospace, ui-monospace, sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--color-accent-lime, #D9F583);
+  text-transform: uppercase;
+}
+
+/* ── Copy Button ─────────────────────────────────── */
+.btn-copy-code {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #C5D8CC;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  direction: ltr !important;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-copy-code:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.btn-copy-code.is-copied {
+  background-color: rgba(61, 99, 68, 0.4);
+  color: var(--color-code-kw, #D8EF87);
+  border-color: rgba(216, 239, 135, 0.4);
+}
+
+.copy-text {
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+/* ── Code Pre/Code Area ──────────────────────────── */
+.code-content-pre {
+  margin: 0;
+  padding: 14px 16px;
+  font-family: 'Consolas', 'Menlo', 'Monaco', 'Courier New', monospace, ui-monospace;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--color-code-text, #ECF0D9);
+  white-space: pre;
+  overflow-x: auto;
+  direction: ltr !important;
+  text-align: left !important;
+  tab-size: 4;
+}
+
+.code-content-pre code {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: none;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+/* Custom code scrollbar */
+.code-content-pre::-webkit-scrollbar {
+  height: 6px;
+}
+
+.code-content-pre::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.code-content-pre::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+}
+
+.code-content-pre::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}

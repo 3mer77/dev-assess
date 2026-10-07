@@ -1,12 +1,13 @@
 ﻿using System.Text.RegularExpressions;
 using DevAssess.Api.Dtos.Assessment;
 using DevAssess.Api.Interfaces.Assessment;
+using DevAssess.Api.Models;
 
 namespace DevAssess.Api.Services.Assessment;
 
-    public class SessionPlanValidator : ISessionPlanValidator
-    {
-        private static readonly HashSet<string> AllowedTypes =
+public class SessionPlanValidator : ISessionPlanValidator
+{
+    private static readonly HashSet<string> AllowedTypes =
     [
         "Concept",
         "Debugging",
@@ -27,11 +28,13 @@ namespace DevAssess.Api.Services.Assessment;
             @"^[a-z0-9]+(?:-[a-z0-9]+)*(?:\.[a-z0-9]+(?:-[a-z0-9]+)*)+$",
             RegexOptions.Compiled);
 
-    public IReadOnlyList<string> Validate(SessionPlan plan)
+    public IReadOnlyList<string> Validate(
+        SessionPlan plan,
+        AssessmentBudget budget)
     {
         var errors = new List<string>();
 
-        ValidateSession(plan, errors);
+        ValidateSession(plan, budget, errors);
         ValidateChallenges(plan, errors);
 
         return errors;
@@ -39,6 +42,7 @@ namespace DevAssess.Api.Services.Assessment;
 
     private static void ValidateSession(
         SessionPlan plan,
+        AssessmentBudget budget,
         List<string> errors)
     {
         if (string.IsNullOrWhiteSpace(plan.Title))
@@ -62,10 +66,19 @@ namespace DevAssess.Api.Services.Assessment;
             return;
         }
 
-        if (plan.Challenges.Count != 5)
+        if (plan.Challenges.Count != budget.TargetChallenges)
         {
             errors.Add(
-                $"Session must contain exactly 5 challenges. Received {plan.Challenges.Count}.");
+                $"Session must contain exactly {budget.TargetChallenges} challenges. " +
+                $"Received {plan.Challenges.Count}.");
+        }
+
+        if (plan.Challenges.Count < 3 ||
+            plan.Challenges.Count > 12)
+        {
+            errors.Add(
+                $"Session challenge count must be between 3 and 12. " +
+                $"Received {plan.Challenges.Count}.");
         }
     }
 
@@ -73,7 +86,8 @@ namespace DevAssess.Api.Services.Assessment;
         SessionPlan plan,
         List<string> errors)
     {
-        if (plan.Challenges is null || plan.Challenges.Count == 0)
+        if (plan.Challenges is null ||
+            plan.Challenges.Count == 0)
         {
             return;
         }
@@ -83,22 +97,25 @@ namespace DevAssess.Api.Services.Assessment;
             .OrderBy(order => order)
             .ToList();
 
-        var expectedOrders = new[] { 1, 2, 3, 4, 5 };
+        var expectedOrders = Enumerable
+            .Range(1, plan.Challenges.Count)
+            .ToList();
 
         if (!orders.SequenceEqual(expectedOrders))
         {
             errors.Add(
-                "Challenge orders must be exactly 1, 2, 3, 4, and 5.");
+                $"Challenge orders must be sequential from 1 to {plan.Challenges.Count}.");
         }
 
         for (var i = 0; i < plan.Challenges.Count; i++)
         {
             var challenge = plan.Challenges[i];
 
-            ValidateChallenge(challenge, i + 1, errors);
+            ValidateChallenge(
+                challenge,
+                i + 1,
+                errors);
         }
-
-        ValidateInitialDifficultyDistribution(plan, errors);
     }
 
     private static void ValidateChallenge(
@@ -112,19 +129,22 @@ namespace DevAssess.Api.Services.Assessment;
                 $"Challenge {position} has invalid type '{challenge.Type}'.");
         }
 
-        if (!AllowedDifficulties.Contains(challenge.Difficulty))
+        if (!AllowedDifficulties.Contains(
+                challenge.Difficulty))
         {
             errors.Add(
                 $"Challenge {position} has invalid difficulty '{challenge.Difficulty}'.");
         }
 
-        if (string.IsNullOrWhiteSpace(challenge.Title))
+        if (string.IsNullOrWhiteSpace(
+                challenge.Title))
         {
             errors.Add(
                 $"Challenge {position} must have a title.");
         }
 
-        if (string.IsNullOrWhiteSpace(challenge.Prompt))
+        if (string.IsNullOrWhiteSpace(
+                challenge.Prompt))
         {
             errors.Add(
                 $"Challenge {position} must have a prompt.");
@@ -145,12 +165,14 @@ namespace DevAssess.Api.Services.Assessment;
                 $"Challenge {position} should contain no more than 4 expected evidence keys.");
         }
 
-        var duplicateEvidence = challenge.ExpectedEvidence
-            .Where(skill => !string.IsNullOrWhiteSpace(skill))
-            .GroupBy(skill => skill)
-            .Where(group => group.Count() > 1)
-            .Select(group => group.Key)
-            .ToList();
+        var duplicateEvidence =
+            challenge.ExpectedEvidence
+                .Where(skill =>
+                    !string.IsNullOrWhiteSpace(skill))
+                .GroupBy(skill => skill)
+                .Where(group => group.Count() > 1)
+                .Select(group => group.Key)
+                .ToList();
 
         if (duplicateEvidence.Count > 0)
         {
@@ -173,28 +195,6 @@ namespace DevAssess.Api.Services.Assessment;
                 errors.Add(
                     $"Challenge {position} contains invalid skill key '{skill}'.");
             }
-        }
-    }
-
-    private static void ValidateInitialDifficultyDistribution(
-        SessionPlan plan,
-        List<string> errors)
-    {
-        var easyCount = plan.Challenges.Count(
-            challenge => challenge.Difficulty == "Easy");
-
-        var mediumCount = plan.Challenges.Count(
-            challenge => challenge.Difficulty == "Medium");
-
-        var hardCount = plan.Challenges.Count(
-            challenge => challenge.Difficulty == "Hard");
-
-        if (easyCount != 1 ||
-            mediumCount != 3 ||
-            hardCount != 1)
-        {
-            errors.Add(
-                "Initial calibration must contain exactly 1 Easy, 3 Medium, and 1 Hard challenge.");
         }
     }
 }

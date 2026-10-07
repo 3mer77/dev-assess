@@ -103,6 +103,9 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     IEvaluationService,
     EvaluationService>();
+builder.Services.AddScoped<
+    IAssessmentBudgetService,
+    AssessmentBudgetService>();
 builder.Services.AddSingleton<
     IAnswerEvaluationValidator,
     AnswerEvaluationValidator>();

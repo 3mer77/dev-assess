@@ -14,21 +14,26 @@ public class AssessmentController : ControllerBase
 {
     private readonly AppDbContext _dbContext;
     private readonly IAssessmentPlanner _assessmentPlanner;
+    private readonly IAssessmentBudgetService _assessmentBudgetService;
     private readonly ISessionPlanValidator _sessionPlanValidator;
 
     private readonly IAnswerReviewer _answerReviewer;
+
+    
 
 
     public AssessmentController(
         AppDbContext dbContext,
         IAssessmentPlanner assessmentPlanner,
         ISessionPlanValidator sessionPlanValidator,
+         IAssessmentBudgetService assessmentBudgetService,
         IAnswerReviewer answerReviewer)
     {
         _dbContext = dbContext;
         _assessmentPlanner = assessmentPlanner;
         _sessionPlanValidator = sessionPlanValidator;
         _answerReviewer = answerReviewer;
+        _assessmentBudgetService = assessmentBudgetService;
     }
 
     [HttpPost("test-plan")]
@@ -63,9 +68,19 @@ public class AssessmentController : ControllerBase
             });
         }
 
-        var plan = await _assessmentPlanner.CreatePlanAsync(profile , cancellationToken);
+        var budget =
+    _assessmentBudgetService.Calculate(
+        profile.PreferredSessionMinutes);
 
-        var validationErrors = _sessionPlanValidator.Validate(plan);
+        var plan = await _assessmentPlanner.CreatePlanAsync(
+            profile,
+            budget,
+            cancellationToken);
+
+        var validationErrors =
+      _sessionPlanValidator.Validate(
+          plan,
+          budget);
 
         if (validationErrors.Count > 0)
         {

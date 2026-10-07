@@ -280,5 +280,9 @@ export const ar: TranslationDictionary = {
   'evaluation.completedAt': 'اكتملت في',
   'evaluation.noObservations': 'لا توجد ملاحظات مهارات مباشرة لهذا التحدي.',
   'evaluation.evidenceCount': 'تم تسجيل {count} أدلة مهارية',
+
+  // Prompt Code Renderer
+  'prompt.copy': 'نسخ',
+  'prompt.copied': 'تم النسخ!',
 };
 

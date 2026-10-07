@@ -277,8 +277,10 @@ export const en: TranslationDictionary = {
   'evaluation.confidence': 'Evaluation confidence: {confidence}%',
   'evaluation.backToDashboard': 'Back to Dashboard',
   'evaluation.newSession': 'Start Next Session',
-  'evaluation.completedAt': 'Completed on',
-  'evaluation.noObservations': 'No direct skill observations recorded for this challenge.',
   'evaluation.evidenceCount': '{count} observations recorded',
+
+  // Prompt Code Renderer
+  'prompt.copy': 'Copy',
+  'prompt.copied': 'Copied',
 };
 

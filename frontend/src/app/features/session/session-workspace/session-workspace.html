@@ -211,7 +211,9 @@
                       <!-- Original Prompt Container -->
                       <div class="detail-section">
                         <span class="detail-section-title">{{ 'evaluation.originalPrompt' | translate }}</span>
-                        <div class="prompt-display-box" dir="auto">{{ currChallenge.prompt }}</div>
+                        <div class="prompt-display-box">
+                          <app-prompt-renderer [prompt]="currChallenge.prompt" />
+                        </div>
                       </div>
 
                       <!-- Submitted Answer Container -->
@@ -454,7 +456,9 @@
             <!-- Challenge Prompt Content -->
             <div class="challenge-prompt-section">
               <span class="section-subheading">{{ 'session.prompt' | translate }}</span>
-              <div class="prompt-text-container" dir="auto">{{ current.prompt }}</div>
+              <div class="prompt-text-container">
+                <app-prompt-renderer [prompt]="current.prompt" />
+              </div>
             </div>
 
             <!-- Real Technical Answer Workspace -->

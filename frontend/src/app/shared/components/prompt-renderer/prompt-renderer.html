@@ -1,0 +1,39 @@
+<div class="prompt-renderer-root">
+  @for (segment of segments(); track $index) {
+    @if (segment.type === 'text') {
+      <div class="prompt-text-segment" dir="auto">{{ segment.content }}</div>
+    } @else if (segment.type === 'code') {
+      <div class="prompt-code-block" dir="ltr">
+        <div class="code-block-header">
+          <div class="code-lang-badge">
+            <span class="code-lang-dot"></span>
+            <span class="code-lang-label">{{ segment.formattedLanguage }}</span>
+          </div>
+
+          <button
+            type="button"
+            class="btn-copy-code"
+            [class.is-copied]="copiedIndex() === $index"
+            (click)="copyCode(segment.content, $index)"
+            [attr.aria-label]="(copiedIndex() === $index ? 'prompt.copied' : 'prompt.copy') | translate"
+          >
+            @if (copiedIndex() === $index) {
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span class="copy-text">{{ 'prompt.copied' | translate }}</span>
+            } @else {
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span class="copy-text">{{ 'prompt.copy' | translate }}</span>
+            }
+          </button>
+        </div>
+
+        <pre class="code-content-pre"><code>{{ segment.content }}</code></pre>
+      </div>
+    }
+  }
+</div>
