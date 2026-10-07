@@ -30,9 +30,12 @@ public class GeminiAssessmentPlanner : IAssessmentPlanner
         _client = new Client(apiKey: apiKey);
     }
 
-    public async Task<SessionPlan> CreatePlanAsync(UserLearningProfile profile, AssessmentBudget budget,  CancellationToken cancellationToken = default)
+    public async Task<SessionPlan> CreatePlanAsync(UserLearningProfile profile,  AssessmentBudget budget, IReadOnlyList<SkillEvidenceSummary> skillEvidence, CancellationToken cancellationToken = default)
     {
-        var prompt = BuildPrompt(profile , budget);
+        var prompt = BuildPrompt(
+      profile,
+      budget,
+      skillEvidence);
 
         var response = await _client.Models.GenerateContentAsync(
             model: _model,
@@ -53,7 +56,8 @@ public class GeminiAssessmentPlanner : IAssessmentPlanner
                 ResponseMimeType = "application/json",
 
                 ResponseJsonSchema =
-                    JsonNode.Parse(SessionPlanSchema),
+    BuildSessionPlanSchema(
+        budget.TargetChallenges),
 
                 Temperature = 0.4
             },
@@ -117,10 +121,52 @@ public class GeminiAssessmentPlanner : IAssessmentPlanner
 
     It should NOT be treated as proof of proficiency.
 
-    For this version of DevAssess, no previous verified skill evidence
-    is provided to you.
+    PREVIOUS SKILL EVIDENCE:
 
-    Therefore, treat this session as an INITIAL CALIBRATION SESSION.
+    The user prompt may contain verified skill evidence collected from
+    previous completed assessment sessions.
+
+    Use this evidence to make the next assessment adaptive.
+
+    Evidence priorities mean:
+
+    HIGH:
+    The skill needs more assessment because previous evidence was
+    insufficient, mixed, or negative.
+
+    MEDIUM:
+    Some positive evidence exists, but the skill should still be
+    confirmed when relevant.
+
+    LOW:
+    Repeated positive evidence already exists. Avoid spending standalone
+    basic challenges on this skill unless it is needed as part of a more
+    advanced or integrated scenario.
+
+    When previous evidence exists:
+
+    - Prioritize HIGH priority skills that are relevant to the user's
+      target role and learning goal.
+
+    - Use new scenarios. Do not simply repeat previous questions.
+
+    - Do not try to test every high-priority skill in one session.
+
+    - Select the most relevant skills that fit the current assessment
+      budget and session duration.
+
+    - Skills with LOW priority may still appear inside integrated
+      challenges, but should generally not receive basic standalone
+      questions.
+
+    - Previous positive evidence does not mean permanent mastery.
+      It only means less assessment attention is currently required.
+
+    When no previous verified skill evidence exists:
+
+    - Treat the session as an INITIAL CALIBRATION SESSION.
+    - Cover a broad but relevant selection of skills.
+
 
     INITIAL CALIBRATION RULES:
 
@@ -295,6 +341,30 @@ public class GeminiAssessmentPlanner : IAssessmentPlanner
 
     expectedEvidence must contain normalized technical skill identifiers.
 
+        Every expectedEvidence key MUST contain a domain prefix followed by a dot.
+
+    Valid examples:
+    backend.concurrency
+    backend.threading
+    csharp.async-await
+    csharp.threading
+    api.rest-design
+    api.http-semantics
+    sql.transactions
+    sql.performance
+    efcore.change-tracking
+    architecture.scalability
+    architecture.caching
+
+    Invalid examples:
+    concurrency
+    threading
+    caching
+    performance
+    async
+
+    Never return an unqualified single-word skill identifier.
+
     Prefer concise, reusable skill identifiers such as:
 
     aspnet.dependency-injection
@@ -321,8 +391,41 @@ public class GeminiAssessmentPlanner : IAssessmentPlanner
     """;
     }
 
-    private static string BuildPrompt(UserLearningProfile profile, AssessmentBudget budget)
+
+    private static string BuildSkillEvidenceContext(
+    IReadOnlyList<SkillEvidenceSummary> skillEvidence)
     {
+        if (skillEvidence.Count == 0)
+        {
+            return """
+        No previous verified skill evidence is available.
+
+        Treat this as an initial calibration session.
+        """;
+        }
+
+        var lines = skillEvidence
+            .Take(12)
+            .Select(summary =>
+                $"- {summary.SkillKey} | " +
+                $"state: {summary.State} | " +
+                $"priority: {summary.Priority} | " +
+                $"observations: {summary.EvidenceCount} | " +
+                $"reason: {summary.Reason}");
+
+        return string.Join(
+            System.Environment.NewLine,
+            lines);
+    }
+
+    private static string BuildPrompt(
+     UserLearningProfile profile,
+     AssessmentBudget budget,
+     IReadOnlyList<SkillEvidenceSummary> skillEvidence)
+    {
+        var skillEvidenceContext =
+            BuildSkillEvidenceContext(skillEvidence);
+
         return $"""
         Create the next engineering assessment session for this user.
 
@@ -343,17 +446,37 @@ public class GeminiAssessmentPlanner : IAssessmentPlanner
         Duration:
         {budget.DurationMinutes} minutes
 
-        Minimum challenges:
-        {budget.MinChallenges}
-
-        Target challenges:
+        Required challenge count:
         {budget.TargetChallenges}
-
-        Maximum challenges:
-        {budget.MaxChallenges}
 
         Generate exactly {budget.TargetChallenges} challenges
         for this assessment session.
+
+                PREVIOUS VERIFIED SKILL EVIDENCE:
+
+        {skillEvidenceContext}
+
+        ADAPTIVE PLANNING INSTRUCTIONS:
+
+        Use the previous skill evidence when deciding what this session
+        should focus on.
+
+        Prioritize relevant HIGH priority skills.
+
+        Use MEDIUM priority skills when confirmation would be valuable.
+
+        Avoid spending basic standalone challenges on LOW priority skills
+        that already have repeated positive evidence.
+
+        Do not mechanically create one question for every listed skill.
+
+        Choose the strongest combination of challenges for the user's
+        target role, learning goal, and available session duration.
+
+        Do not repeat previous scenarios merely because a skill requires
+        additional evidence.
+
+        A challenge may assess multiple related skills when appropriate.
 
         Important:
 
@@ -368,83 +491,99 @@ public class GeminiAssessmentPlanner : IAssessmentPlanner
         """;
     }
 
-    private const string SessionPlanSchema =
-        """
+    private static JsonNode BuildSessionPlanSchema(
+    int targetChallenges)
+    {
+        if (targetChallenges is < 3 or > 12)
         {
-          "type": "object",
-          "properties": {
-            "title": {
-              "type": "string"
-            },
-            "goal": {
-              "type": "string"
-            },
-            "reason": {
-              "type": "string"
-            },
-            "challenges": {
-              "type": "array",
-              "minItems": 3,
-              "maxItems": 12,
-              "items": {
-                "type": "object",
-                "properties": {
-                  "type": {
-                    "type": "string",
-                    "enum": [
-                      "Concept",
-                      "Debugging",
-                      "ApiDesign",
-                      "Architecture",
-                      "CodeExplanation"
-                    ]
-                  },
-                  "title": {
-                    "type": "string"
-                  },
-                  "prompt": {
-                    "type": "string"
-                  },
-                  "difficulty": {
-                    "type": "string",
-                    "enum": [
-                      "Easy",
-                      "Medium",
-                      "Hard"
-                    ]
-                  },
-                  "order": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 12
-                  },
-                  "expectedEvidence": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                      "type": "string"
-                    }
-                  }
-                },
-                "required": [
-                  "type",
-                  "title",
-                  "prompt",
-                  "difficulty",
-                  "order",
-                  "expectedEvidence"
-                ],
-                "additionalProperties": false
-              }
-            }
-          },
-          "required": [
-            "title",
-            "goal",
-            "reason",
-            "challenges"
-          ],
-          "additionalProperties": false
+            throw new ArgumentOutOfRangeException(
+                nameof(targetChallenges),
+                "Challenge count must be between 3 and 12.");
         }
-        """;
+
+        var schema = $$"""
+    {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "goal": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "challenges": {
+          "type": "array",
+          "minItems": {{targetChallenges}},
+          "maxItems": {{targetChallenges}},
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": [
+                  "Concept",
+                  "Debugging",
+                  "ApiDesign",
+                  "Architecture",
+                  "CodeExplanation"
+                ]
+              },
+              "title": {
+                "type": "string"
+              },
+              "prompt": {
+                "type": "string"
+              },
+              "difficulty": {
+                "type": "string",
+                "enum": [
+                  "Easy",
+                  "Medium",
+                  "Hard"
+                ]
+              },
+              "order": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": {{targetChallenges}}
+              },
+              "expectedEvidence": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 4,
+                "items": {
+                  "type": "string",
+                 "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*(?:\\.[a-z0-9]+(?:-[a-z0-9]+)*)+$"
+                }
+              }
+            },
+            "required": [
+              "type",
+              "title",
+              "prompt",
+              "difficulty",
+              "order",
+              "expectedEvidence"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "title",
+        "goal",
+        "reason",
+        "challenges"
+      ],
+      "additionalProperties": false
+    }
+    """;
+
+        return JsonNode.Parse(schema)
+            ?? throw new InvalidOperationException(
+                "Failed to build session plan schema.");
+    }
 }

@@ -5,6 +5,7 @@ import {
   computed,
   OnInit,
   OnDestroy,
+  ViewChild,
 } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -23,13 +24,23 @@ import {
 import { LanguageService } from '../../../core/i18n/language.service';
 import { TranslatePipe } from '../../../core/i18n/translate.pipe';
 import { PromptRenderer } from '../../../shared/components/prompt-renderer/prompt-renderer';
+import { VoiceRecorder } from '../voice-recorder/voice-recorder';
+import { VoiceState } from '../../../core/transcription/transcription.models';
 
 export type SaveState = 'saved' | 'saving' | 'error' | 'idle';
 
 @Component({
   selector: 'app-session-workspace',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, TranslatePipe, DatePipe, PromptRenderer],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterLink,
+    TranslatePipe,
+    DatePipe,
+    PromptRenderer,
+    VoiceRecorder,
+  ],
   templateUrl: './session-workspace.html',
   styleUrl: './session-workspace.css',
 })
@@ -62,6 +73,18 @@ export class SessionWorkspace implements OnInit, OnDestroy {
   // Submission UI state
   readonly showSubmitModal = signal<boolean>(false);
   readonly submitWarning = signal<string | null>(null);
+
+  // Voice recording state
+  @ViewChild('voiceRecorder') voiceRecorderRef?: VoiceRecorder;
+  readonly voiceState = signal<VoiceState>('idle');
+  readonly isVoiceActive = computed<boolean>(() => {
+    const s = this.voiceState();
+    return (
+      s === 'recording' ||
+      s === 'transcribing' ||
+      s === 'requesting-permission'
+    );
+  });
 
   // Autosave RxJS Subject
   private readonly answerSubject$ = new Subject<{
@@ -181,6 +204,7 @@ export class SessionWorkspace implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.voiceRecorderRef?.cancel();
     this.flushCurrentSave();
     this.autosaveSub?.unsubscribe();
   }
@@ -329,8 +353,13 @@ export class SessionWorkspace implements OnInit, OnDestroy {
     }
   }
 
+  onVoiceStateChange(state: VoiceState): void {
+    this.voiceState.set(state);
+  }
+
   selectChallenge(index: number): void {
     if (index === this.activeChallengeIndex()) return;
+    this.voiceRecorderRef?.cancel();
     this.flushCurrentSave();
     this.activeChallengeIndex.set(index);
     this.submitWarning.set(null);
@@ -338,6 +367,7 @@ export class SessionWorkspace implements OnInit, OnDestroy {
 
   prevChallenge(): void {
     if (this.isFirstChallenge()) return;
+    this.voiceRecorderRef?.cancel();
     this.flushCurrentSave();
     this.activeChallengeIndex.update((i) => Math.max(0, i - 1));
     this.submitWarning.set(null);
@@ -345,6 +375,7 @@ export class SessionWorkspace implements OnInit, OnDestroy {
 
   nextChallenge(): void {
     if (this.isLastChallenge()) return;
+    this.voiceRecorderRef?.cancel();
     this.flushCurrentSave();
     this.activeChallengeIndex.update((i) =>
       Math.min(this.totalChallenges() - 1, i + 1)
@@ -361,6 +392,7 @@ export class SessionWorkspace implements OnInit, OnDestroy {
   }
 
   openSubmitModal(): void {
+    this.voiceRecorderRef?.cancel();
     this.flushCurrentSave();
 
     const unanswered = this.challenges()

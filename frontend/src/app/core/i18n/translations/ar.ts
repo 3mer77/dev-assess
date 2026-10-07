@@ -284,5 +284,19 @@ export const ar: TranslationDictionary = {
   // Prompt Code Renderer
   'prompt.copy': 'نسخ',
   'prompt.copied': 'تم النسخ!',
+
+  // Voice Answer & Transcription
+  'voice.speakAnswer': 'تحدث بالإجابة',
+  'voice.recording': 'جارٍ التسجيل...',
+  'voice.prompt': 'تحدث بإجابتك بكل حرية ووضوح',
+  'voice.cancel': 'إلغاء',
+  'voice.done': 'تم',
+  'voice.transcribing': 'جارٍ تحويل الصوت إلى نص...',
+  'voice.success': 'تم التفريغ — راجع إجابتك قبل المتابعة',
+  'voice.permissionDenied': 'تم رفض إذن الوصول إلى الميكروفون. يرجى تفعيل إذن الميكروفون من إعدادات المتصفح.',
+  'voice.notSupported': 'تسجيل الصوت غير مدعوم في هذا المتصفح.',
+  'voice.fileTooLarge': 'حجم التسجيل الصوتي كبير جداً (الحد الأقصى 10 ميجابايت).',
+  'voice.transcriptionFailed': 'فشل تحويل الصوت إلى نص. تم الاحتفاظ بإجابتك السابقة دون تغيير.',
+  'voice.requestingPermission': 'جارٍ طلب إذن الميكروفون...',
 };
 

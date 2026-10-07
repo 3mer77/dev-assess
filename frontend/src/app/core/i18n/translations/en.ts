@@ -282,5 +282,19 @@ export const en: TranslationDictionary = {
   // Prompt Code Renderer
   'prompt.copy': 'Copy',
   'prompt.copied': 'Copied',
+
+  // Voice Answer & Transcription
+  'voice.speakAnswer': 'Speak answer',
+  'voice.recording': 'Recording...',
+  'voice.prompt': 'Speak your answer freely',
+  'voice.cancel': 'Cancel',
+  'voice.done': 'Done',
+  'voice.transcribing': 'Transcribing your answer...',
+  'voice.success': 'Transcribed — review your answer before continuing',
+  'voice.permissionDenied': 'Microphone permission denied. Please allow microphone access in your browser settings.',
+  'voice.notSupported': 'Voice recording is not supported by this browser.',
+  'voice.fileTooLarge': 'Audio recording is too large (max 10 MB).',
+  'voice.transcriptionFailed': 'Transcription failed. Your existing answer was not changed.',
+  'voice.requestingPermission': 'Requesting microphone access...',
 };
 

@@ -500,15 +500,26 @@
                 </div>
               </div>
 
-              <textarea
-                class="technical-answer-textarea"
-                [ngModel]="currentAnswer()"
-                (ngModelChange)="onAnswerInput($event)"
+              <!-- Voice Recording Action & Panel -->
+              <app-voice-recorder
+                #voiceRecorder
                 [disabled]="isReadOnly()"
-                [placeholder]="'session.answerPlaceholder' | translate"
-                rows="8"
-                dir="auto"
-              ></textarea>
+                [currentAnswer]="currentAnswer()"
+                (answerChange)="onAnswerInput($event)"
+                (stateChange)="onVoiceStateChange($event)"
+              />
+
+              @if (!isVoiceActive()) {
+                <textarea
+                  class="technical-answer-textarea"
+                  [ngModel]="currentAnswer()"
+                  (ngModelChange)="onAnswerInput($event)"
+                  [disabled]="isReadOnly()"
+                  [placeholder]="'session.answerPlaceholder' | translate"
+                  rows="8"
+                  dir="auto"
+                ></textarea>
+              }
             </div>
 
             <!-- Incomplete Submission Warning -->

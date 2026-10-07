@@ -1,0 +1,125 @@
+<div class="voice-recorder-container">
+  <!-- IDLE / ERROR TRIGGER ROW -->
+  @if (state() === 'idle' || state() === 'error') {
+    <div class="voice-trigger-row">
+      <button
+        type="button"
+        class="btn-speak-answer"
+        [disabled]="disabled()"
+        (click)="startRecording()"
+        [attr.aria-label]="'voice.speakAnswer' | translate"
+      >
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mic-icon">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
+        <span>{{ 'voice.speakAnswer' | translate }}</span>
+      </button>
+
+      @if (successFeedback()) {
+        <div class="voice-success-pill" role="status">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>{{ 'voice.success' | translate }}</span>
+        </div>
+      }
+    </div>
+
+    <!-- Non-intrusive Error Banner -->
+    @if (errorMessage(); as err) {
+      <div class="voice-error-alert" role="alert">
+        <div class="voice-error-content">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span>{{ err | translate }}</span>
+        </div>
+        <button type="button" class="btn-dismiss-error" (click)="dismissError()" aria-label="Dismiss">
+          &times;
+        </button>
+      </div>
+    }
+  }
+
+  <!-- REQUESTING PERMISSION STATE -->
+  @if (state() === 'requesting-permission') {
+    <div class="voice-permission-panel">
+      <div class="permission-content">
+        <span class="spinner-micro"></span>
+        <span>{{ 'voice.requestingPermission' | translate }}</span>
+      </div>
+      <button type="button" class="btn-voice-cancel" (click)="cancel()">
+        {{ 'voice.cancel' | translate }}
+      </button>
+    </div>
+  }
+
+  <!-- RECORDING STATE (Replaces answer textarea) -->
+  @if (state() === 'recording') {
+    <div class="voice-recording-panel">
+      <div class="recording-header-row">
+        <div class="recording-badge">
+          <span class="recording-pulse-dot"></span>
+          <span class="recording-badge-text">{{ 'voice.recording' | translate }}</span>
+        </div>
+        <div class="recording-timer" dir="ltr">
+          {{ formattedTimer() }}
+          <span class="timer-max">/ 05:00</span>
+        </div>
+      </div>
+
+      <div class="recording-body">
+        <div class="sound-wave-visualizer">
+          <span class="bar bar-1"></span>
+          <span class="bar bar-2"></span>
+          <span class="bar bar-3"></span>
+          <span class="bar bar-4"></span>
+          <span class="bar bar-5"></span>
+          <span class="bar bar-6"></span>
+          <span class="bar bar-7"></span>
+        </div>
+        <p class="recording-prompt-text">{{ 'voice.prompt' | translate }}</p>
+      </div>
+
+      <div class="recording-footer-actions">
+        <button
+          type="button"
+          class="btn-voice-cancel"
+          (click)="cancel()"
+          [attr.aria-label]="'voice.cancel' | translate"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+          <span>{{ 'voice.cancel' | translate }}</span>
+        </button>
+
+        <button
+          type="button"
+          class="btn-voice-done"
+          (click)="finishRecording()"
+          [attr.aria-label]="'voice.done' | translate"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>{{ 'voice.done' | translate }}</span>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- TRANSCRIBING STATE (Replaces answer textarea) -->
+  @if (state() === 'transcribing') {
+    <div class="voice-transcribing-panel">
+      <div class="transcribing-spinner"></div>
+      <p class="transcribing-text">{{ 'voice.transcribing' | translate }}</p>
+    </div>
+  }
+</div>

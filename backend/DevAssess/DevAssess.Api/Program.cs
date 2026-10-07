@@ -104,6 +104,13 @@ builder.Services.AddScoped<
     IEvaluationService,
     EvaluationService>();
 builder.Services.AddScoped<
+    ITranscriptionService,
+    GeminiTranscriptionService>();
+
+builder.Services.AddScoped<
+    ISkillEvidenceSummaryService,
+    SkillEvidenceSummaryService>();
+builder.Services.AddScoped<
     IAssessmentBudgetService,
     AssessmentBudgetService>();
 builder.Services.AddSingleton<

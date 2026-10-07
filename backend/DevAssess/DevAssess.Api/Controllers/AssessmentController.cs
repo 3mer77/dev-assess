@@ -1,9 +1,10 @@
-﻿using System.Security.Claims;
-using DevAssess.Api.Data;
+﻿using DevAssess.Api.Data;
 using DevAssess.Api.Interfaces.Assessment;
+using DevAssess.Api.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace DevAssess.Api.Controllers;
 
@@ -75,6 +76,7 @@ public class AssessmentController : ControllerBase
         var plan = await _assessmentPlanner.CreatePlanAsync(
             profile,
             budget,
+            Array.Empty<SkillEvidenceSummary>(),
             cancellationToken);
 
         var validationErrors =

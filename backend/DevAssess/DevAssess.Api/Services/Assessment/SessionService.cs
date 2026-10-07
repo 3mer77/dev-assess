@@ -15,16 +15,20 @@ public class SessionService : ISessionService
 
     private readonly IAssessmentBudgetService _assessmentBudgetService;
 
+    private readonly ISkillEvidenceSummaryService _skillEvidenceSummaryService;
+
     public SessionService(
         AppDbContext dbContext,
         IAssessmentPlanner assessmentPlanner,
         ISessionPlanValidator sessionPlanValidator,
-        IAssessmentBudgetService assessmentBudgetService)
+        IAssessmentBudgetService assessmentBudgetService,
+        ISkillEvidenceSummaryService skillEvidenceSummaryService)
     {
         _dbContext = dbContext;
         _assessmentPlanner = assessmentPlanner;
         _sessionPlanValidator = sessionPlanValidator;
         _assessmentBudgetService = assessmentBudgetService;
+        _skillEvidenceSummaryService = skillEvidenceSummaryService;
     }
 
     public async Task<LearningSessionResponse> CreateSessionAsync(string userId,CancellationToken cancellationToken = default)
@@ -45,10 +49,16 @@ public class SessionService : ISessionService
     _assessmentBudgetService.Calculate(
         profile.PreferredSessionMinutes);
 
+        var skillEvidenceSummaries =
+    await _skillEvidenceSummaryService.GetForUserAsync(
+        userId,
+        cancellationToken);
+
         var plan = await _assessmentPlanner.CreatePlanAsync(
-            profile,
-            budget,
-            cancellationToken);
+     profile,
+     budget,
+     skillEvidenceSummaries,
+     cancellationToken);
 
         var validationErrors =
     _sessionPlanValidator.Validate(

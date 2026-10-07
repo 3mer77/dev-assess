@@ -59,7 +59,8 @@ public class GeminiAnswerReviewer : IAnswerReviewer
                 ResponseMimeType = "application/json",
 
                 ResponseJsonSchema =
-                    JsonNode.Parse(EvaluationSchema),
+                 BuildEvaluationSchema(
+                session.Challenges.Count),
 
                 Temperature = 0.2
             },
@@ -470,9 +471,7 @@ public class GeminiAnswerReviewer : IAnswerReviewer
         """;
     }
 
-    private static string BuildReviewPrompt(
-        UserLearningProfile profile,
-        LearningSession session)
+    private static string BuildReviewPrompt(UserLearningProfile profile,LearningSession session)
     {
         var challengeSections = session.Challenges
             .OrderBy(challenge => challenge.Order)
@@ -557,121 +556,126 @@ public class GeminiAnswerReviewer : IAnswerReviewer
         REVIEW REQUIREMENTS
         ==================================================
 
+        This session contains exactly {session.Challenges.Count} challenges.
+
+        You MUST return exactly {session.Challenges.Count} challengeReviews.
+
         Review every challenge exactly once.
 
         Return exactly one challengeReview for each provided challenge.
 
+        Do not omit a challenge.
+
+        Do not review the same challenge more than once.
+
         Each challengeReview MUST use the exact challengeId supplied above.
-
-        Skill observations must use skill identifiers from that
-        challenge's expectedEvidence list.
-
-        Remember:
-
-        No meaningful technical answer
-        = insufficient evidence
-
-        Clear technical misconception
-        = negative evidence
-
-        Correct understanding
-        = positive evidence
-
-        Some correct reasoning plus meaningful gaps
-        = mixed evidence.
         """;
     }
 
-    private const string EvaluationSchema =
-        """
+    private static JsonNode BuildEvaluationSchema(
+    int challengeCount)
+    {
+        if (challengeCount is < 1 or > 12)
         {
-          "type": "object",
-          "properties": {
-            "summary": {
-              "type": "string"
-            },
-            "nextFocus": {
-              "type": "string"
-            },
-            "challengeReviews": {
-              "type": "array",
-              "minItems": 5,
-              "maxItems": 5,
-              "items": {
-                "type": "object",
-                "properties": {
-                  "challengeId": {
-                    "type": "string"
-                  },
-                  "summary": {
-                    "type": "string"
-                  },
-                  "strengths": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "gaps": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    }
-                  },
-                  "observations": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                      "type": "object",
-                      "properties": {
-                        "skill": {
-                          "type": "string"
-                        },
-                        "signal": {
-                          "type": "string",
-                          "enum": [
-                            "positive",
-                            "negative",
-                            "mixed",
-                            "insufficient"
-                          ]
-                        },
-                        "confidence": {
-                          "type": "number",
-                          "minimum": 0,
-                          "maximum": 1
-                        },
-                        "evidence": {
-                          "type": "string"
-                        }
-                      },
-                      "required": [
-                        "skill",
-                        "signal",
-                        "confidence",
-                        "evidence"
-                      ],
-                      "additionalProperties": false
-                    }
-                  }
-                },
-                "required": [
-                  "challengeId",
-                  "summary",
-                  "strengths",
-                  "gaps",
-                  "observations"
-                ],
-                "additionalProperties": false
-              }
-            }
-          },
-          "required": [
-            "summary",
-            "nextFocus",
-            "challengeReviews"
-          ],
-          "additionalProperties": false
+            throw new ArgumentOutOfRangeException(
+                nameof(challengeCount),
+                "Challenge count must be between 1 and 12.");
         }
-        """;
+
+        var schema = $$"""
+    {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string"
+        },
+        "nextFocus": {
+          "type": "string"
+        },
+        "challengeReviews": {
+          "type": "array",
+          "minItems": {{challengeCount}},
+          "maxItems": {{challengeCount}},
+          "items": {
+            "type": "object",
+            "properties": {
+              "challengeId": {
+                "type": "string"
+              },
+              "summary": {
+                "type": "string"
+              },
+              "strengths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "gaps": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "observations": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "skill": {
+                      "type": "string"
+                    },
+                    "signal": {
+                      "type": "string",
+                      "enum": [
+                        "positive",
+                        "negative",
+                        "mixed",
+                        "insufficient"
+                      ]
+                    },
+                    "confidence": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "evidence": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "skill",
+                    "signal",
+                    "confidence",
+                    "evidence"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "challengeId",
+              "summary",
+              "strengths",
+              "gaps",
+              "observations"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "nextFocus",
+        "challengeReviews"
+      ],
+      "additionalProperties": false
+    }
+    """;
+
+        return JsonNode.Parse(schema)
+            ?? throw new InvalidOperationException(
+                "Failed to build evaluation schema.");
+    }
 }
