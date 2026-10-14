@@ -163,7 +163,7 @@ export const en: TranslationDictionary = {
 
   // Dashboard
   'home.eyebrow': 'EVERY DAY, ONE STEP FORWARD',
-  'home.welcome': 'Welcome, {name} ☀️',
+  'home.welcome': 'Welcome, {name}',
   'home.subtitle': 'Ready to challenge yourself today? Your next step starts with a question.',
   'home.startSessionBtn': '+ Start session',
   'home.statCompleted': 'Completed sessions',

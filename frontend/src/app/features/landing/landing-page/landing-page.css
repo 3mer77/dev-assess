@@ -6,11 +6,14 @@
 
 /* ── Top Header ──────────────────────────────── */
 .landing-nav-header {
-  height: 100px;
+  min-height: 88px;
+  height: auto;
+  padding-top: env(safe-area-inset-top, 0px);
   background-color: var(--color-bg);
   border-bottom: 1px solid var(--color-border-subtle);
   display: flex;
   align-items: center;
+  box-sizing: border-box;
 }
 
 .landing-nav-inner {
@@ -560,7 +563,29 @@ html[lang="ar"] .hero-main-title {
 
 @media (max-width: 760px) {
   .landing-nav-header {
-    height: 78px;
+    height: auto;
+    min-height: calc(64px + env(safe-area-inset-top, 0px));
+    padding-top: max(12px, env(safe-area-inset-top, 0px));
+    padding-bottom: 10px;
+    box-sizing: border-box;
+  }
+
+  .landing-nav-inner {
+    padding: 0 16px;
+  }
+
+  /* Remove brand name on mobile, keep logo icon only */
+  .brand-text-name {
+    display: none !important;
+  }
+
+  /* Remove duplicate button on mobile - keep one clean primary button */
+  .login-link {
+    display: none !important;
+  }
+
+  .landing-nav-actions {
+    gap: 8px;
   }
 
   .landing-nav-links {
